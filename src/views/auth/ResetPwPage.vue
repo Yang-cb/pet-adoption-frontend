@@ -1,27 +1,17 @@
 <script setup>
-import { ChatDotSquare, Lock, Message, User, Connection } from "@element-plus/icons-vue";
-import router from "@/router/auth-router.js";
 import { reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
+import { ChatDotSquare, Lock, Message, RefreshRight } from "@element-plus/icons-vue";
 import { get, post } from "@/utils/request.js";
+import { ElMessage } from "element-plus";
+import router from "@/router/auth-router.js";
 
 const form = reactive({
-    username: '',
+    email: '',
+    code: '',
     password: '',
     password_repeat: '',
-    email: '',
-    code: ''
 })
 
-const validateUsername = (rule, value, callback) => {
-    if (value === '') {
-        callback(new Error('请输入用户名'))
-    } else if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(value)) {
-        callback(new Error('用户名不能包含特殊字符，只能是中文/英文'))
-    } else {
-        callback()
-    }
-}
 
 const validatePassword = (rule, value, callback) => {
     if (value === '') {
@@ -34,24 +24,20 @@ const validatePassword = (rule, value, callback) => {
 }
 
 const rules = {
-    username: [
-        { validator: validateUsername, trigger: ['blur', 'change'] },
-        { min: 2, max: 8, message: '用户名的长度必须在2-8个字符之间', trigger: ['blur', 'change'] },
-    ],
-    password: [
-        { required: true, message: '请输入密码', trigger: 'blur' },
-        { min: 6, max: 16, message: '密码的长度必须在6-16个字符之间', trigger: ['blur', 'change'] }
-    ],
-    password_repeat: [
-        { validator: validatePassword, trigger: ['blur', 'change'] },
-    ],
     email: [
         { required: true, message: '请输入邮件地址', trigger: 'blur' },
         { type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur', 'change'] }
     ],
     code: [
         { required: true, message: '请输入获取的验证码', trigger: 'blur' },
-    ]
+    ],
+    password: [
+        { required: true, message: '请输入密码', trigger: 'blur' },
+        { min: 6, max: 16, message: '密码的长度必须在6-16个字符之间', trigger: ['blur'] }
+    ],
+    password_repeat: [
+        { validator: validatePassword, trigger: ['blur', 'change'] },
+    ],
 }
 
 const formRef = ref()
@@ -66,7 +52,7 @@ const onValidate = (prop, isValid) => {
 // 发送验证码
 const validateEmail = () => {
     coldTime.value = 60
-    get(`/api/auth/sendEmail?email=${form.email}&type=register`, () => {
+    get(`/api/auth/sendEmail?email=${form.email}&type=resetPw`, () => {
         ElMessage.success(`验证码已发送`)
         const handle = setInterval(() => {
             coldTime.value--
@@ -80,17 +66,16 @@ const validateEmail = () => {
     })
 }
 
-// 注册
-const register = () => {
+// 重置密码
+const resetPw = () => {
     formRef.value.validate((isValid) => {
         if (isValid) {
-            post('/api/auth/register', {
-                username: form.username,
-                password: form.password,
+            post('/api/auth/resetPw', {
                 email: form.email,
-                code: form.code
+                code: form.code,
+                password: form.password
             }, () => {
-                ElMessage.success('注册成功，请登录')
+                ElMessage.success('重置成功')
                 router.push("/")
             })
         } else {
@@ -100,41 +85,13 @@ const register = () => {
 }
 </script>
 
-
 <template>
     <div style="text-align: center;margin: 0 20px">
         <div style="margin-top: 100px">
-            <div style="font-size: 25px;font-weight: bold">注册新用户</div>
+            <div style="font-size: 25px;font-weight: bold">重置密码</div>
         </div>
         <div style="margin-top: 50px">
             <el-form :model="form" :rules="rules" @validate="onValidate" ref="formRef">
-                <el-form-item prop="username">
-                    <el-input v-model="form.username" :maxlength="8" type="text" placeholder="用户名">
-                        <template #prefix>
-                            <el-icon>
-                                <User />
-                            </el-icon>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                <el-form-item prop="password">
-                    <el-input v-model="form.password" :maxlength="16" type="password" placeholder="密码">
-                        <template #prefix>
-                            <el-icon>
-                                <Lock />
-                            </el-icon>
-                        </template>
-                    </el-input>
-                </el-form-item>
-                <el-form-item prop="password_repeat">
-                    <el-input v-model="form.password_repeat" :maxlength="16" type="password" placeholder="重复密码">
-                        <template #prefix>
-                            <el-icon>
-                                <Lock />
-                            </el-icon>
-                        </template>
-                    </el-input>
-                </el-form-item>
                 <el-form-item prop="email">
                     <el-input v-model="form.email" type="email" placeholder="电子邮件地址">
                         <template #prefix>
@@ -163,18 +120,33 @@ const register = () => {
                         </el-col>
                     </el-row>
                 </el-form-item>
+                <el-form-item prop="password">
+                    <el-input v-model="form.password" :maxlength="16" type="password" placeholder="新密码">
+                        <template #prefix>
+                            <el-icon>
+                                <Lock />
+                            </el-icon>
+                        </template>
+                    </el-input>
+                </el-form-item>
+                <el-form-item prop="password_repeat">
+                    <el-input v-model="form.password_repeat" :maxlength="16" type="password" placeholder="再次输入密码">
+                        <template #prefix>
+                            <el-icon>
+                                <Lock />
+                            </el-icon>
+                        </template>
+                    </el-input>
+                </el-form-item>
             </el-form>
         </div>
         <div style="margin-top: 80px">
-            <el-button style="width: 270px" type="warning" @click="register" plain><el-icon>
-                    <Connection />
-                </el-icon>立即注册</el-button>
+            <el-button style="width: 270px" type="warning" @click="resetPw" plain><el-icon>
+                    <RefreshRight />
+                </el-icon>重置密码</el-button>
         </div>
         <div style="margin-top: 20px">
-            <span style="font-size: 14px;line-height: 15px;color: grey">已有账号? </span>
-            <el-link type="primary" style="translate: 0 -2px" @click="router.push('/')">立即登录</el-link>
+            <el-link type="primary" style="translate: 0 -2px" @click="router.push('/')">返回登陆</el-link>
         </div>
     </div>
 </template>
-
-<style scoped></style>

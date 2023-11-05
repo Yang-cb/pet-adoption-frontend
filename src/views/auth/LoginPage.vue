@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import { User, Lock } from '@element-plus/icons-vue'
-import {login} from '@/utils/request.js'
+import { User, Lock, Position } from '@element-plus/icons-vue'
+import { login } from '@/utils/request.js'
 import router from "@/router/auth-router.js";
 
 const form = ref({
@@ -22,11 +22,11 @@ const rule = {
 const formRef = ref()
 
 function userLogin() {
-  formRef.value.validate((isValid) => {
-    if(isValid) {
-      login(form.value.username, form.value.password, form.value.remember, () => router.push('/index'))
-    }
-  });
+    formRef.value.validate((isValid) => {
+        if (isValid) {
+            login(form.value.username, form.value.password, form.value.remember, () => router.push('/index'))
+        }
+    });
 }
 </script>
 
@@ -64,19 +64,21 @@ function userLogin() {
                         </el-form-item>
                     </el-col>
                     <el-col :span="12" style="text-align: right">
-                        <el-link>忘记密码？</el-link>
+                        <el-link @click="router.push('/resetPw')">忘记密码？</el-link>
                     </el-col>
                 </el-row>
             </el-form>
         </div>
         <div style="margin-top: 40px">
-            <el-button @click="userLogin()" style="width: 270px" type="success" plain>立即登录</el-button>
+            <el-button @click="userLogin()" style="width: 270px" type="success" plain><el-icon>
+                    <Position />
+                </el-icon>立即登录</el-button>
         </div>
         <el-divider>
             <span style="color: grey;font-size: 13px">没有账号</span>
         </el-divider>
         <div>
-            <el-button style="width: 270px" type="warning" plain>注册账号</el-button>
+            <el-button @click="router.push('/register')" style="width: 270px" type="warning" plain>注册账号</el-button>
         </div>
     </div>
 </template>
