@@ -87,10 +87,10 @@ const resetPw = () => {
 
 <template>
     <div style="text-align: center;margin: 0 20px">
-        <div style="margin-top: 100px">
+        <div >
             <div style="font-size: 25px;font-weight: bold">重置密码</div>
         </div>
-        <div style="margin-top: 50px">
+        <div style="margin-top: 30px">
             <el-form :model="form" :rules="rules" @validate="onValidate" ref="formRef">
                 <el-form-item prop="email">
                     <el-input v-model="form.email" type="email" placeholder="电子邮件地址">
@@ -112,7 +112,7 @@ const resetPw = () => {
                                 </template>
                             </el-input>
                         </el-col>
-                        <el-col :span="5">
+                        <el-col :span="5" style="margin-left: 3px;">
                             <!--邮箱正确，验证码操作不在冷却，可以获取验证码  -->
                             <el-button type="success" @click="validateEmail" :disabled="!isEmailValid || coldTime > 0">
                                 {{ coldTime > 0 ? coldTime + ' 秒后获取' : '获取验证码' }}
@@ -140,13 +140,13 @@ const resetPw = () => {
                 </el-form-item>
             </el-form>
         </div>
-        <div style="margin-top: 80px">
-            <el-button style="width: 270px" type="warning" @click="resetPw" plain><el-icon>
+        <div style="margin-top: 20px">
+            <el-button style="width: 360px" type="primary" @click="resetPw" plain><el-icon>
                     <RefreshRight />
                 </el-icon>重置密码</el-button>
         </div>
-        <div style="margin-top: 20px">
-            <el-link type="primary" style="translate: 0 -2px" @click="router.push('/')">返回登陆</el-link>
-        </div>
+        <el-row style="margin-top: 50px">
+            <el-button type='' link @click="router.push('/')">返回登陆</el-button>
+        </el-row>
     </div>
 </template>

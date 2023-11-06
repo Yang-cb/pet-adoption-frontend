@@ -1,31 +1,28 @@
+<script setup>
+
+</script>
+
 <template>
-    <div style="width: 100vw;height: 100vh;overflow: hidden;display: flex">
-        <div style="flex: 1">
-            <el-image style="width: 100%;height: 100%" fit="cover"
-                      src=""/>
-        </div>
-        <div class="welcome-title">
-            <div style="font-size: 30px;font-weight: bold">让领养代替购买</div>
-        </div>
-        <div class="right-card">
+    <div style="width: 100vw;height: 100vh;overflow: hidden;display: flex;justify-content:center;
+            		align-items:center;background-color:darkgray;">
+        <div class="auth-card">
             <router-view v-slot="{ Component }">
                 <transition name="el-fade-in-linear" mode="out-in">
-                    <component :is="Component" style="height: 100%"/>
+                    <component :is="Component" />
                 </transition>
             </router-view>
         </div>
     </div>
 </template>
 
-<script setup>
-
-</script>
-
 <style scoped>
-.right-card {
-  width: 400px;
-  z-index: 1;
-  background-color: var(--el-bg-color);
+.auth-card {
+    width: 400px;
+    height: fit-content;
+    z-index: 1;
+    background-color: var(--el-bg-color);
+    padding: 20px 0;
+    border-radius: 20px;
 }
 
 .welcome-title {

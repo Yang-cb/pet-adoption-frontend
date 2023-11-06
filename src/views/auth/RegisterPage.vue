@@ -103,10 +103,10 @@ const register = () => {
 
 <template>
     <div style="text-align: center;margin: 0 20px">
-        <div style="margin-top: 100px">
+        <div>
             <div style="font-size: 25px;font-weight: bold">注册新用户</div>
         </div>
-        <div style="margin-top: 50px">
+        <div style="margin-top: 30px">
             <el-form :model="form" :rules="rules" @validate="onValidate" ref="formRef">
                 <el-form-item prop="username">
                     <el-input v-model="form.username" :maxlength="8" type="text" placeholder="用户名">
@@ -155,7 +155,7 @@ const register = () => {
                                 </template>
                             </el-input>
                         </el-col>
-                        <el-col :span="5">
+                        <el-col :span="5" style="margin-left: 3px;">
                             <!--邮箱正确，验证码操作不在冷却，可以获取验证码  -->
                             <el-button type="success" @click="validateEmail" :disabled="!isEmailValid || coldTime > 0">
                                 {{ coldTime > 0 ? coldTime + ' 秒后获取' : '获取验证码' }}
@@ -165,15 +165,14 @@ const register = () => {
                 </el-form-item>
             </el-form>
         </div>
-        <div style="margin-top: 80px">
-            <el-button style="width: 270px" type="warning" @click="register" plain><el-icon>
+        <div style="margin-top: 20px">
+            <el-button style="width: 360px" type="primary" @click="register" plain><el-icon>
                     <Connection />
                 </el-icon>立即注册</el-button>
         </div>
-        <div style="margin-top: 20px">
-            <span style="font-size: 14px;line-height: 15px;color: grey">已有账号? </span>
-            <el-link type="primary" style="translate: 0 -2px" @click="router.push('/')">立即登录</el-link>
-        </div>
+        <el-row style="margin-top: 50px">
+            <el-button type='' link @click="router.push('/')">返回登陆</el-button>
+        </el-row>
     </div>
 </template>
 
