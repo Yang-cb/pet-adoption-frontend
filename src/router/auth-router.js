@@ -23,14 +23,27 @@ const router = createRouter({
                     component: () => import('@/views/auth/ResetPwPage.vue')
                 }
             ]
-        }, {
+        },
+        // 主页
+        {
             path: '/index',
             name: 'index',
             component: () => import('@/views/Index.vue'),
+            children: [
+                {
+                    path: 'showAll',
+                    name: '展示全部',
+                    component: () => import('@/views/index/ShowAllPage.vue')
+                },{
+                    path: 'main2',
+                    name: '',
+                    component: () => import('@/views/index/Main2.vue')
+                },
+            ]
         }
     ]
 })
-
+/*
 // 路由守护
 router.beforeEach((to, from, next) => {
     const isUnauthorized = unauthorized()
@@ -45,5 +58,5 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
-
+*/
 export default router
