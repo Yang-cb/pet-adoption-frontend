@@ -31,13 +31,17 @@ const router = createRouter({
             component: () => import('@/views/Index.vue'),
             children: [
                 {
-                    path: 'showAll',
+                    path: 'allPet',
                     name: '展示全部',
-                    component: () => import('@/views/index/ShowAllPage.vue')
+                    component: () => import('@/views/index/AllPetPage.vue')
                 },{
                     path: 'main2',
                     name: '',
                     component: () => import('@/views/index/Main2.vue')
+                },{
+                    path: 'publishAdopt',
+                    name: '发布宠物领养信息',
+                    component: () => import('@/views/index/PublishAdoptPage.vue')
                 },
             ]
         }

@@ -15,103 +15,91 @@ function userLogout() {
 </script>
 
 <template>
-    <!-- 外层容器。当子元素中包含<el-header>时，全部子元素会垂直上下排列，否则会水平左右排列。 -->
-    <el-container class="layout-container-demo" style="height: 500px">
-        <!-- 侧边栏容器 -->
-        <el-aside width="200px">
-            <!-- 滚动条 -->
-            <el-scrollbar>
-                <!-- 根据index默认打开哪个menu -->
-                <el-menu :default-openeds="['1']" @select="menuClick">
-                    <el-sub-menu index="1">
-                        <template #title>
-                            <el-icon>
-                                <message />
-                            </el-icon>Navigator One
-                        </template>
-                        <el-menu-item index="/index/showAll">免费领养</el-menu-item>
-                        <el-menu-item index="/index/main2">Option 2</el-menu-item>
-                        <el-menu-item index="1-3">Option 3</el-menu-item>
-                        <el-sub-menu index="1-4">
-                            <template #title>Option4</template>
-                            <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
+    <div style="height: 100vh; ">
+        <!-- 外层容器。当子元素中包含<el-header>时，全部子元素会垂直上下排列，否则会水平左右排列。 -->
+        <el-container class="layout-container-demo" style="height: 100vh">
+            <!-- 侧边栏容器 -->
+            <el-aside width="200px">
+                <!-- 滚动条 -->
+                <el-scrollbar>
+                    <!-- 根据index默认打开哪个menu -->
+                    <el-menu :default-openeds="['1']" @select="menuClick">
+                        <el-sub-menu index="1">
+                            <template #title>免费领养</template>
+                            <el-menu-item index="/index/allPet">全部宠物</el-menu-item>
+                            <el-menu-item>aaa</el-menu-item>
+                            <el-menu-item index="1-3">狗</el-menu-item>
+                            <el-sub-menu index="1-4">
+                                <template #title>Option4</template>
+                                <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
+                            </el-sub-menu>
                         </el-sub-menu>
-                    </el-sub-menu>
-                    <el-sub-menu index="2">
-                        <template #title>
-                            <el-icon><icon-menu /></el-icon>Navigator Two
-                        </template>
-                        <el-menu-item-group>
-                            <template #title>Group 1</template>
-                            <el-menu-item index="2-1">Option 1</el-menu-item>
-                            <el-menu-item index="2-2">Option 2</el-menu-item>
-                        </el-menu-item-group>
-                        <el-menu-item-group title="Group 2">
-                            <el-menu-item index="2-3">Option 3</el-menu-item>
-                        </el-menu-item-group>
-                        <el-sub-menu index="2-4">
-                            <template #title>Option 4</template>
-                            <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
+                        <el-sub-menu index="2">
+                            <template #title>
+                                <el-icon><icon-menu /></el-icon>发布领养信息
+                            </template>
+                            <el-menu-item index="/index/publishAdopt">求抱走</el-menu-item>
+                            <el-menu-item index="2-2">想领养</el-menu-item>
                         </el-sub-menu>
-                    </el-sub-menu>
-                    <el-sub-menu index="3">
-                        <template #title>
-                            <el-icon>
+                        <el-sub-menu index="3">
+                            <template #title>
+                                <el-icon>
+                                    <setting />
+                                </el-icon>Navigator Three
+                            </template>
+                            <el-menu-item-group>
+                                <template #title>Group 1</template>
+                                <el-menu-item index="3-1">Option 1</el-menu-item>
+                                <el-menu-item index="3-2">Option 2</el-menu-item>
+                            </el-menu-item-group>
+                            <el-menu-item-group title="Group 2">
+                                <el-menu-item index="3-3">Option 3</el-menu-item>
+                            </el-menu-item-group>
+                            <el-sub-menu index="3-4">
+                                <template #title>Option 4</template>
+                                <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
+                            </el-sub-menu>
+                        </el-sub-menu>
+                    </el-menu>
+                </el-scrollbar>
+            </el-aside>
+
+            <el-container>
+                <!-- 顶栏容器 -->
+                <el-header style="text-align: right; font-size: 12px">
+                    <div class="toolbar">
+                        <!-- 头像 -->
+                        <div>
+                            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+                        </div>
+                        <!-- 昵称 -->
+                        <span>Tom</span>
+                        <!-- 下拉菜单 -->
+                        <el-dropdown>
+                            <el-icon style="margin-right: 8px; margin-top: 1px">
                                 <setting />
-                            </el-icon>Navigator Three
-                        </template>
-                        <el-menu-item-group>
-                            <template #title>Group 1</template>
-                            <el-menu-item index="3-1">Option 1</el-menu-item>
-                            <el-menu-item index="3-2">Option 2</el-menu-item>
-                        </el-menu-item-group>
-                        <el-menu-item-group title="Group 2">
-                            <el-menu-item index="3-3">Option 3</el-menu-item>
-                        </el-menu-item-group>
-                        <el-sub-menu index="3-4">
-                            <template #title>Option 4</template>
-                            <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-                        </el-sub-menu>
-                    </el-sub-menu>
-                </el-menu>
-            </el-scrollbar>
-        </el-aside>
-
-        <el-container>
-            <!-- 顶栏容器 -->
-            <el-header style="text-align: right; font-size: 12px">
-                <div class="toolbar">
-                    <!-- 头像 -->
-                    <div>
-                        <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png" />
+                            </el-icon>
+                            <template #dropdown>
+                                <el-dropdown-menu>
+                                    <el-dropdown-item>
+                                        <el-button type='' link>编辑个人资料</el-button>
+                                    </el-dropdown-item>
+                                    <el-dropdown-item>
+                                        <el-button type='' link @click="userLogout">退出登录</el-button>
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </template>
+                        </el-dropdown>
                     </div>
-                    <!-- 昵称 -->
-                    <span>Tom</span>
-                    <!-- 下拉菜单 -->
-                    <el-dropdown>
-                        <el-icon style="margin-right: 8px; margin-top: 1px">
-                            <setting />
-                        </el-icon>
-                        <template #dropdown>
-                            <el-dropdown-menu>
-                                <el-dropdown-item>
-                                    <el-button type='' link>编辑个人资料</el-button>
-                                </el-dropdown-item>
-                                <el-dropdown-item>
-                                    <el-button type='' link @click="userLogout">退出登录</el-button>
-                                </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </template>
-                    </el-dropdown>
-                </div>
-            </el-header>
+                </el-header>
 
-            <!-- 主要区域容器 -->
-            <el-main>
-                <router-view></router-view>
-            </el-main>
+                <!-- 主要区域容器 -->
+                <el-main>
+                    <router-view></router-view>
+                </el-main>
+            </el-container>
         </el-container>
-    </el-container>
+    </div>
 </template>
   
 <style scoped>
