@@ -1,6 +1,6 @@
 <script setup>
 import { ChatDotSquare, Lock, Message, User, Connection } from "@element-plus/icons-vue";
-import router from "@/router/auth-router.js";
+import router from "@/router/index.js";
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { get, post } from "@/utils/request.js";

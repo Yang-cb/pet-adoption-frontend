@@ -3,7 +3,7 @@ import { reactive, ref } from "vue";
 import { ChatDotSquare, Lock, Message, RefreshRight } from "@element-plus/icons-vue";
 import { get, post } from "@/utils/request.js";
 import { ElMessage } from "element-plus";
-import router from "@/router/auth-router.js";
+import router from "@/router/index.js";
 
 const form = reactive({
     email: '',

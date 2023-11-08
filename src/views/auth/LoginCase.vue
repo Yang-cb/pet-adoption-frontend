@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { User, Lock, Position } from '@element-plus/icons-vue'
 import { login } from '@/utils/request.js'
-import router from "@/router/auth-router.js";
+import router from "@/router/index.js";
 
 const form = ref({
     username: '',
