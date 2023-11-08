@@ -33,7 +33,6 @@
                 {{ pb.text }}
               </el-text>
             </div>
-
           </div>
         </a>
       </li>
@@ -45,14 +44,17 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { Calendar, Location } from '@element-plus/icons-vue'
+import { ElMessage } from 'element-plus';
+import { get } from '@/utils/request.js'
+
 const pBList = ref([])
 
-axios.get('/api/pet/getAllPB').then(res => {
-  pBList.value = res.data.data;
-}).catch(err => {
-  ElMessage.error(err)
+// 获取数据
+get('/api/pet/getAllPB', (data) => {
+  pBList.value = data
+}, (err) => {
+  ElMessage.err(err)
 })
-
 
 </script>
 

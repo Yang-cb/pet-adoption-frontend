@@ -23,10 +23,11 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="ruleForm.isFree" active-value="1" inactive-value="0" />
       </el-form-item>
-      <el-form-item label="宠物照片">
-        <el-upload :auto-upload="true" action="/baseURL/file/upload" name="file" :headers="{ 'Authorization': 'Bearer ' + token }"
-          :on-success="uploadSuccess">
-          <el-button type=""></el-button>
+      <el-form-item label="宠物照片" prop="pictureId">
+        <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
+        <el-upload v-model="ruleForm.pictureId" :auto-upload="false" :action="''" :show-file-list="false"
+          :on-change="handleAvatarChangeIcon">
+          <el-button size="mini" type="primary">选取文件</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="出生日期" prop="birthdate">
@@ -55,9 +56,9 @@
           placeholder="内容不得超过300字" />
       </el-form-item>
       <el-form-item>
-        <el-button @click="resetForm(ruleFormRef)">Reset</el-button>
+        <el-button @click="resetForm(ruleFormRef)">重置</el-button>
         <el-button type="primary" @click="submitForm(ruleFormRef)">
-          Create
+          发布
         </el-button>
       </el-form-item>
     </el-form>
@@ -67,16 +68,31 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { get, post, takeAccessToken } from "@/utils/request.js";
+import { post } from '@/utils/request.js'
 
-// 获取token
-const token = takeAccessToken();
-
-
-// 上传文件成功的回调函数
-const uploadSuccess = (res) => {
-  ruleForm.pictureId = res.data;
-  console.log(res.data);
+// 选中文件触发的change事件
+const handleAvatarChangeIcon = (file, fileList) => {
+  // 限制文件后缀名
+  const isJPG = file.raw.type === 'image/jpeg'
+  const isPNG = file.raw.type === 'image/png'
+  // 限制上传文件的大小
+  const isLt5M = file.raw.size / 1024 / 1024 < 5
+  if (!isPNG && !isJPG) {
+    ElMessage.error('图片只能是 JPG/PNG 格式')
+    return false
+  } else if (!isLt5M) {
+    ElMessage.error('图片应在5MB以内')
+    return false
+  } else {
+    // 发起请求
+    var param = new FormData();; //formdata格式
+    param.append("file", file.raw);
+    post('/api/file/upload', param, (res) => {
+      ElMessage.success('上传成功');
+      // 返回值为图片id
+      ruleForm.pictureId = res
+    })
+  }
 }
 
 interface RuleForm {
@@ -103,7 +119,7 @@ const ruleForm = reactive<RuleForm>({
   sex: '1', // 宠物性别
   isFree: '1', // 是否免费
   birthdate: '', // 出生日期
-  location: '', //领养地址
+  location: '', // 领养地址
   pictureId: '', // 图片id
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
@@ -113,6 +129,13 @@ const ruleForm = reactive<RuleForm>({
   text: '' // 详细描述
 })
 
+const validateFileUrl = (rule, value, callback) => {
+  if (value.length < 1) {//我控制了FileList 长度代表文件个数
+    callback(new Error("请上传文件"))
+  } else {
+    callback()
+  }
+}
 
 const rules = reactive<FormRules<RuleForm>>({
   petType: [
@@ -138,31 +161,36 @@ const rules = reactive<FormRules<RuleForm>>({
     {
       type: 'date',
       message: '请输入正确的出生日期',
-      trigger: 'blur'
+      trigger: 'change'
     }
   ],
   location: [
     {
       required: true,
       message: '请输入领养地址',
-      trigger: 'blur',
+      trigger: 'change',
+    },
+  ],
+  pictureId: [
+    {
+      required: true, validator: validateFileUrl, trigger: 'change'
     },
   ],
   contactsName: [
     {
       required: true,
       message: '请输入联系人',
-      trigger: 'blur',
+      trigger: 'change',
     },
   ],
   contactsPhone: [
-    { required: true, message: '请输入手机号', trigger: 'blur', },
+    { required: true, message: '请输入手机号', trigger: 'change', },
     {}
   ],
   contactsWechat: [
     {
-      message: '请输入领养地址',
-      trigger: 'blur',
+      message: '请输入合法的微信地址',
+      trigger: 'change',
     },
   ],
   contactsEmail: [
@@ -182,7 +210,7 @@ const rules = reactive<FormRules<RuleForm>>({
   text: [
     {
       required: true,
-      message: '标题',
+      message: '请详细描述宠物信息',
       trigger: 'blur',
     },
   ],
@@ -201,6 +229,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         isFree: ruleForm.isFree,
         birthdate: ruleForm.birthdate,
         location: ruleForm.location,
+        pictureId: ruleForm.pictureId,
         contactsName: ruleForm.contactsName,
         contactsPhone: ruleForm.contactsPhone,
         contactsWechat: ruleForm.contactsWechat,
@@ -209,6 +238,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         text: ruleForm.text
       }, () => {
         ElMessage.success('发布成功')
+        formEl.resetFields()
       })
     } else {
       ElMessage.warning('请完整填写表单内容')
@@ -220,11 +250,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   formEl.resetFields()
-}
-
-
-function fileAction() {
-throw new Error('Function not implemented.');
 }
 </script>
   

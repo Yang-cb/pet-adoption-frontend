@@ -15,7 +15,7 @@ const defaultError = (error) => {
     ElMessage.error('发生了一些错误，请联系管理员')
 }
 
-// 默认
+// 默认失败处理
 const defaultFailure = (message, status, url) => {
     console.warn(`请求地址: ${url}, 状态码: ${status}, 错误信息: ${message}`)
     ElMessage.warning(message)
