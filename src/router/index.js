@@ -29,30 +29,32 @@ const router = createRouter({
             path: '/index',
             name: 'index',
             component: () => import('@/views/Index.vue'),
+            // 默认访问路径
+            redirect:'/index/allPB',
             children: [
                 {
                     path: 'allPB',
                     name: '展示全部布告',
                     component: () => import('@/views/index/AllPBCase.vue')
                 },{
-                    path: 'main2',
-                    name: '',
-                    component: () => import('@/views/index/Main2.vue')
+                    path: 'publishAway',
+                    name: '发布宠物求抱走信息',
+                    component: () => import('@/views/index/PublishAwayCase.vue')
                 },{
                     path: 'publishAdopt',
-                    name: '发布宠物领养信息',
-                    component: () => import('@/views/index/PublishAwayCase.vue')
+                    name: '发布宠物想领养信息',
+                    component: () => import('@/views/index/PublishAdoptCase.vue')
                 },
             ]
         }
     ]
 })
-/*
+
 // 路由守护
 router.beforeEach((to, from, next) => {
     const isUnauthorized = unauthorized()
     // 用户已经登录，去访问auth* ：重定向到index
-    if (to.name.startsWith('auth') && !isUnauthorized) {
+    if (to.name.startsWith('api/auth') && !isUnauthorized) {
         next('/index')
     }
     // 用户未登录，去访问index* ：重定向到auth
@@ -62,5 +64,5 @@ router.beforeEach((to, from, next) => {
         next()
     }
 })
-*/
+
 export default router

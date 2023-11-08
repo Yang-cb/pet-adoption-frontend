@@ -1,63 +1,63 @@
+
 <!-- 发布宠物领养信息 -->
 <template>
   <div style="margin: 20px;">
-    <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="150px" class="demo-ruleForm" :size="formSize"
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm" :size="formSize"
       status-icon>
       <el-form-item label="宠物姓名">
-        <el-input v-model="ruleForm.petName" placeholder="如果不知道，可不填" />
+        <el-input v-model="form.petName" placeholder="如果不知道，可不填" />
       </el-form-item>
       <el-form-item label="宠物种类" prop="petType">
-        <el-radio-group v-model="ruleForm.petType">
+        <el-radio-group v-model="form.petType">
           <el-radio-button label="cat">猫猫</el-radio-button>
           <el-radio-button label="dog">狗狗</el-radio-button>
           <el-radio-button label="other">其他</el-radio-button>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="性别" prop="sex">
-        <el-radio-group v-model="ruleForm.sex">
+        <el-radio-group v-model="form.sex">
           <el-radio-button label="1">公</el-radio-button>
           <el-radio-button label="0">母</el-radio-button>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="免费领养" prop="isFree" required>
         <!-- 状态为on时为1，状态为off时为0 -->
-        <el-switch v-model="ruleForm.isFree" active-value="1" inactive-value="0" />
+        <el-switch v-model="form.isFree" active-value="1" inactive-value="0" />
       </el-form-item>
       <el-form-item label="宠物照片" prop="pictureId">
         <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
-        <el-upload v-model="ruleForm.pictureId" :auto-upload="false" :action="''" :show-file-list="false"
+        <el-upload v-model="form.pictureId" :auto-upload="false" :action="''" :show-file-list="false"
           :on-change="handleAvatarChangeIcon">
           <el-button size="mini" type="primary">选取文件</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="出生日期" prop="birthdate">
-        <el-date-picker v-model="ruleForm.birthdate" type="date" placeholder="宠物出生日期" style="width: 100%" />
+        <el-date-picker v-model="form.birthdate" type="date" placeholder="宠物出生日期" style="width: 100%" />
       </el-form-item>
       <el-form-item label="领养地址" prop="location">
-        <el-input v-model="ruleForm.location" />
+        <el-input v-model="form.location" />
       </el-form-item>
       <el-form-item label="联系人" prop="contactsName">
-        <el-input v-model="ruleForm.contactsName" />
+        <el-input v-model="form.contactsName" />
       </el-form-item>
       <el-form-item label="联系电话" prop="contactsPhone">
-        <el-input v-model="ruleForm.contactsPhone" />
+        <el-input v-model="form.contactsPhone" />
       </el-form-item>
       <el-form-item label="微信号" prop="contactsWechat">
-        <el-input v-model="ruleForm.contactsWechat" placeholder="可不填" />
+        <el-input v-model="form.contactsWechat" placeholder="可不填" />
       </el-form-item>
       <el-form-item label="邮箱" prop="contactsEmail">
-        <el-input v-model="ruleForm.contactsEmail" placeholder="可不填" />
+        <el-input v-model="form.contactsEmail" placeholder="可不填" />
       </el-form-item>
       <el-form-item label="标题" prop="title">
-        <el-input v-model="ruleForm.title" placeholder="该内容会展示在最显眼的地方，如一只可爱的三花等一个好人家" />
+        <el-input v-model="form.title" placeholder="该内容会展示在最显眼的地方，如一只可爱的三花等一个好人家" />
       </el-form-item>
       <el-form-item label="详细描述" prop="text">
-        <el-input v-model="ruleForm.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
-          placeholder="内容不得超过300字" />
+        <el-input v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="内容不得超过300字" />
       </el-form-item>
       <el-form-item>
-        <el-button @click="resetForm(ruleFormRef)">重置</el-button>
-        <el-button type="primary" @click="submitForm(ruleFormRef)">
+        <el-button @click="resetForm(formRef)">重置</el-button>
+        <el-button type="primary" @click="submitForm(formRef)">
           发布
         </el-button>
       </el-form-item>
@@ -65,10 +65,11 @@
   </div>
 </template>
   
-<script lang="ts" setup>
+<script setup>
 import { reactive, ref } from 'vue'
-import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
+import { ElMessage } from 'element-plus'
 import { post } from '@/utils/request.js'
+import router from "@/router/index.js";
 
 // 选中文件触发的change事件
 const handleAvatarChangeIcon = (file, fileList) => {
@@ -90,30 +91,14 @@ const handleAvatarChangeIcon = (file, fileList) => {
     post('/api/file/upload', param, (res) => {
       ElMessage.success('上传成功');
       // 返回值为图片id
-      ruleForm.pictureId = res
+      form.pictureId = res
     })
   }
 }
 
-interface RuleForm {
-  petName: string
-  petType: string
-  sex: string
-  isFree: string
-  birthdate: string
-  location: string
-  pictureId: string
-  contactsName: string
-  contactsPhone: string
-  contactsWechat: string
-  contactsEmail: string
-  title: string
-  text: string
-}
-
 const formSize = ref('default')
-const ruleFormRef = ref<FormInstance>()
-const ruleForm = reactive<RuleForm>({
+
+const form = reactive({
   petName: '', // 宠物姓名
   petType: 'cat', // 宠物种类
   sex: '1', // 宠物性别
@@ -129,15 +114,16 @@ const ruleForm = reactive<RuleForm>({
   text: '' // 详细描述
 })
 
+// 文件上传数量规则
 const validateFileUrl = (rule, value, callback) => {
-  if (value.length < 1) {//我控制了FileList 长度代表文件个数
-    callback(new Error("请上传文件"))
+  if (value.length < 1) {
+    callback(new Error("请上传宠物图片"))
   } else {
     callback()
   }
 }
 
-const rules = reactive<FormRules<RuleForm>>({
+const rules = {
   petType: [
     {
       required: true,
@@ -173,7 +159,9 @@ const rules = reactive<FormRules<RuleForm>>({
   ],
   pictureId: [
     {
-      required: true, validator: validateFileUrl, trigger: 'change'
+      required: true,
+      validator: validateFileUrl,
+      trigger: 'change'
     },
   ],
   contactsName: [
@@ -214,31 +202,32 @@ const rules = reactive<FormRules<RuleForm>>({
       trigger: 'blur',
     },
   ],
-})
+}
+
+const formRef = ref()
 
 // 提交表单
-const submitForm = async (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  await formEl.validate((valid) => {
+const submitForm = async () => {
+  await formRef.value.validate((valid) => {
     if (valid) {
       post('/api/pet/publishBulletin', {
-        type: 'away',
-        petName: ruleForm.petName,
-        petType: ruleForm.petType,
-        sex: ruleForm.sex,
-        isFree: ruleForm.isFree,
-        birthdate: ruleForm.birthdate,
-        location: ruleForm.location,
-        pictureId: ruleForm.pictureId,
-        contactsName: ruleForm.contactsName,
-        contactsPhone: ruleForm.contactsPhone,
-        contactsWechat: ruleForm.contactsWechat,
-        contactsEmail: ruleForm.contactsEmail,
-        title: ruleForm.title,
-        text: ruleForm.text
+        type: 'away', // 求抱走
+        petName: form.petName,
+        petType: form.petType,
+        sex: form.sex,
+        isFree: form.isFree,
+        birthdate: form.birthdate,
+        location: form.location,
+        pictureId: form.pictureId,
+        contactsName: form.contactsName,
+        contactsPhone: form.contactsPhone,
+        contactsWechat: form.contactsWechat,
+        contactsEmail: form.contactsEmail,
+        title: form.title,
+        text: form.text
       }, () => {
         ElMessage.success('发布成功')
-        formEl.resetFields()
+        resetForm()
       })
     } else {
       ElMessage.warning('请完整填写表单内容')
@@ -247,9 +236,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 }
 
 // 重置表单数据
-const resetForm = (formEl: FormInstance | undefined) => {
-  if (!formEl) return
-  formEl.resetFields()
+const resetForm = () => {
+  formRef.value.resetFields();
 }
 </script>
-  

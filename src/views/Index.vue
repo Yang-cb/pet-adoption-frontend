@@ -25,10 +25,10 @@ function userLogout() {
                     <!-- 根据index默认打开哪个menu -->
                     <el-menu :default-openeds="['1']" @select="menuClick">
                         <el-sub-menu index="1">
-                            <template #title>免费领养</template>
+                            <template #title>领养</template>
                             <el-menu-item index="/index/allPB">全部宠物</el-menu-item>
-                            <el-menu-item>aaa</el-menu-item>
-                            <el-menu-item index="1-3">狗</el-menu-item>
+                            <el-menu-item>免费领养</el-menu-item>
+                            <el-menu-item index="1-3">有偿领养</el-menu-item>
                             <el-sub-menu index="1-4">
                                 <template #title>Option4</template>
                                 <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
@@ -38,8 +38,8 @@ function userLogout() {
                             <template #title>
                                 <el-icon><icon-menu /></el-icon>发布领养信息
                             </template>
-                            <el-menu-item index="/index/publishAdopt">求抱走</el-menu-item>
-                            <el-menu-item index="2-2">想领养</el-menu-item>
+                            <el-menu-item index="/index/publishAway">求抱走</el-menu-item>
+                            <el-menu-item index="/index/publishAdopt">想领养</el-menu-item>
                         </el-sub-menu>
                         <el-sub-menu index="3">
                             <template #title>
