@@ -1,6 +1,6 @@
 <!-- 发布宠物领养信息 -->
 <template>
-  <div style="margin: 20px 500px 0px 0px;">
+  <div style="margin: 20px;">
     <el-form ref="ruleFormRef" :model="ruleForm" :rules="rules" label-width="150px" class="demo-ruleForm" :size="formSize"
       status-icon>
       <el-form-item label="宠物姓名">
@@ -22,6 +22,12 @@
       <el-form-item label="免费领养" prop="isFree" required>
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="ruleForm.isFree" active-value="1" inactive-value="0" />
+      </el-form-item>
+      <el-form-item label="宠物照片">
+        <el-upload :auto-upload="true" action="/baseURL/file/upload" name="file" :headers="{ 'Authorization': 'Bearer ' + token }"
+          :on-success="uploadSuccess">
+          <el-button type=""></el-button>
+        </el-upload>
       </el-form-item>
       <el-form-item label="出生日期" prop="birthdate">
         <el-date-picker v-model="ruleForm.birthdate" type="date" placeholder="宠物出生日期" style="width: 100%" />
@@ -61,7 +67,17 @@
 <script lang="ts" setup>
 import { reactive, ref } from 'vue'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
-import { get, post } from "@/utils/request.js";
+import { get, post, takeAccessToken } from "@/utils/request.js";
+
+// 获取token
+const token = takeAccessToken();
+
+
+// 上传文件成功的回调函数
+const uploadSuccess = (res) => {
+  ruleForm.pictureId = res.data;
+  console.log(res.data);
+}
 
 interface RuleForm {
   petName: string
@@ -70,6 +86,7 @@ interface RuleForm {
   isFree: string
   birthdate: string
   location: string
+  pictureId: string
   contactsName: string
   contactsPhone: string
   contactsWechat: string
@@ -87,6 +104,7 @@ const ruleForm = reactive<RuleForm>({
   isFree: '1', // 是否免费
   birthdate: '', // 出生日期
   location: '', //领养地址
+  pictureId: '', // 图片id
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
   contactsWechat: '', // 微信
@@ -204,5 +222,9 @@ const resetForm = (formEl: FormInstance | undefined) => {
   formEl.resetFields()
 }
 
+
+function fileAction() {
+throw new Error('Function not implemented.');
+}
 </script>
   

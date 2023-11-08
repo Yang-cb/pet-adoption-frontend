@@ -1,6 +1,6 @@
 <script setup>
 import { logout } from '@/utils/request.js'
-import router from "@/router/auth-router.js";
+import router from "@/router/index.js";
 import { ref } from 'vue'
 import { Menu as IconMenu, Message, Setting } from '@element-plus/icons-vue'
 
@@ -26,7 +26,7 @@ function userLogout() {
                     <el-menu :default-openeds="['1']" @select="menuClick">
                         <el-sub-menu index="1">
                             <template #title>免费领养</template>
-                            <el-menu-item index="/index/allPet">全部宠物</el-menu-item>
+                            <el-menu-item index="/index/allPB">全部宠物</el-menu-item>
                             <el-menu-item>aaa</el-menu-item>
                             <el-menu-item index="1-3">狗</el-menu-item>
                             <el-sub-menu index="1-4">

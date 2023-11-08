@@ -2,7 +2,8 @@ import axios from "axios";
 import { ElMessage } from "element-plus";
 
 // 指定默认请求路径
-axios.defaults.baseURL = 'http://localhost:8080'
+const baseURL = "/baseURL";
+axios.defaults.baseURL = baseURL
 
 // token存储的key
 const authItemName = "authorize"
@@ -120,4 +121,4 @@ function unauthorized() {
     return !takeAccessToken()
 }
 
-export { post, get, login, logout, unauthorized }
+export { post, get, login, logout, unauthorized, takeAccessToken }

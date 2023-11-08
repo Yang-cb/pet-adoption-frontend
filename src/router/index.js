@@ -12,15 +12,15 @@ const router = createRouter({
                 {
                     path: '',
                     name: 'auth-login',
-                    component: () => import('@/views/auth/LoginPage.vue')
+                    component: () => import('@/views/auth/LoginCase.vue')
                 }, {
                     path: 'register',
                     name: 'auth-register',
-                    component: () => import('@/views/auth/RegisterPage.vue')
+                    component: () => import('@/views/auth/RegisterCase.vue')
                 }, {
                     path: 'resetPw',
                     name: 'auth-resetPw',
-                    component: () => import('@/views/auth/ResetPwPage.vue')
+                    component: () => import('@/views/auth/ResetPwCase.vue')
                 }
             ]
         },
@@ -31,9 +31,9 @@ const router = createRouter({
             component: () => import('@/views/Index.vue'),
             children: [
                 {
-                    path: 'allPet',
-                    name: '展示全部',
-                    component: () => import('@/views/index/AllPetPage.vue')
+                    path: 'allPB',
+                    name: '展示全部布告',
+                    component: () => import('@/views/index/AllPBCase.vue')
                 },{
                     path: 'main2',
                     name: '',
@@ -41,7 +41,7 @@ const router = createRouter({
                 },{
                     path: 'publishAdopt',
                     name: '发布宠物领养信息',
-                    component: () => import('@/views/index/PublishAdoptPage.vue')
+                    component: () => import('@/views/index/PublishAwayCase.vue')
                 },
             ]
         }
