@@ -1,5 +1,14 @@
-import { createRouter, createWebHistory } from 'vue-router'
-import { unauthorized } from "@/utils/request.js";
+import {createRouter, createWebHistory} from 'vue-router'
+import {unauthorized} from '@/api/request.js';
+import Auth from '@/views/Auth.vue'
+import AuthLogin from '@/views/auth/LoginCase.vue'
+import AuthRegister from '@/views/auth/RegisterCase.vue'
+import AuthResetPw from '@/views/auth/ResetPwCase.vue'
+import Index from '@/views/Index.vue'
+import AllPB from "@/views/bulletin/AllBulletinCase.vue";
+import PublishAway from "@/views/publish/PublishAwayCase.vue";
+import PublishAdopt from "@/views/publish/PublishAdoptCase.vue";
+import PersonalData from "@/views/account/PersonalDataCase.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -7,20 +16,20 @@ const router = createRouter({
         {
             path: '/',
             name: 'auth',
-            component: () => import('@/views/Auth.vue'),
+            component: Auth,
             children: [
                 {
                     path: '',
-                    name: 'auth-login',
-                    component: () => import('@/views/auth/LoginCase.vue')
+                    name: '登录',
+                    component: AuthLogin
                 }, {
                     path: 'register',
-                    name: 'auth-register',
-                    component: () => import('@/views/auth/RegisterCase.vue')
+                    name: '注册',
+                    component: AuthRegister
                 }, {
                     path: 'resetPw',
-                    name: 'auth-resetPw',
-                    component: () => import('@/views/auth/ResetPwCase.vue')
+                    name: '重置密码',
+                    component: AuthResetPw
                 }
             ]
         },
@@ -28,41 +37,46 @@ const router = createRouter({
         {
             path: '/index',
             name: 'index',
-            component: () => import('@/views/Index.vue'),
+            component: Index,
             // 默认访问路径
-            redirect:'/index/allPB',
+            redirect: '/index/allPB',
             children: [
                 {
                     path: 'allPB',
                     name: '展示全部布告',
-                    component: () => import('@/views/index/AllPBCase.vue')
-                },{
+                    component: AllPB
+                }, {
                     path: 'publishAway',
                     name: '发布宠物求抱走信息',
-                    component: () => import('@/views/index/PublishAwayCase.vue')
-                },{
+                    component: PublishAway
+                }, {
                     path: 'publishAdopt',
                     name: '发布宠物想领养信息',
-                    component: () => import('@/views/index/PublishAdoptCase.vue')
+                    component: PublishAdopt
                 },
+                {
+                    path: '/personalData',
+                    name: '个人页',
+                    component: PersonalData
+                }
             ]
         }
     ]
 })
 
 // 路由守护
-router.beforeEach((to, from, next) => {
-    const isUnauthorized = unauthorized()
-    // 用户已经登录，去访问auth* ：重定向到index
-    if (to.name.startsWith('api/auth') && !isUnauthorized) {
-        next('/index')
-    }
-    // 用户未登录，去访问index* ：重定向到auth
-    else if (to.name.startsWith('index') && isUnauthorized) {
-        next('/')
-    } else {
-        next()
-    }
-})
+// router.beforeEach((to, from, next) => {
+//     const isUnauthorized = unauthorized()
+//     // 用户已经登录，去访问auth* ：重定向到index
+//     if (to.name.startsWith('auth') && !isUnauthorized) {
+//         next('/index')
+//     }
+//     // 用户未登录，去访问index* ：重定向到auth
+//     else if (to.name.startsWith('index') && isUnauthorized) {
+//         next('/')
+//     } else {
+//         next()
+//     }
+// })
 
 export default router

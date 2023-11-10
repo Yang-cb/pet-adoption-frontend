@@ -1,11 +1,9 @@
-
 <!-- 发布宠物领养信息 -->
 <template>
   <div style="margin: 20px;">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm" :size="formSize"
-      status-icon>
+    <el-form ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm" status-icon>
       <el-form-item label="宠物姓名">
-        <el-input v-model="form.petName" placeholder="如果不知道，可不填" />
+        <el-input v-model="form.petName" placeholder="如果不知道，可不填"/>
       </el-form-item>
       <el-form-item label="宠物种类" prop="petType">
         <el-radio-group v-model="form.petType">
@@ -22,57 +20,57 @@
       </el-form-item>
       <el-form-item label="免费领养" prop="isFree" required>
         <!-- 状态为on时为1，状态为off时为0 -->
-        <el-switch v-model="form.isFree" active-value="1" inactive-value="0" />
+        <el-switch v-model="form.isFree" active-value="1" inactive-value="0"/>
       </el-form-item>
       <el-form-item label="宠物照片" prop="pictureId">
         <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
         <el-upload v-model="form.pictureId" :auto-upload="false" :action="''" :show-file-list="false"
-          :on-change="handleAvatarChangeIcon">
-          <el-button size="mini" type="primary">选取文件</el-button>
+                   :on-change="handleAvatarChangeIcon">
+          <el-button type="primary">选取文件</el-button>
         </el-upload>
       </el-form-item>
       <el-form-item label="出生日期" prop="birthdate">
-        <el-date-picker v-model="form.birthdate" type="date" placeholder="宠物出生日期" style="width: 100%" />
+        <el-date-picker v-model="form.birthdate" type="date" placeholder="宠物出生日期" style="width: 100%"/>
       </el-form-item>
       <el-form-item label="领养地址" prop="location">
-        <el-input v-model="form.location" />
+        <el-input v-model="form.location"/>
       </el-form-item>
       <el-form-item label="联系人" prop="contactsName">
-        <el-input v-model="form.contactsName" />
+        <el-input v-model="form.contactsName"/>
       </el-form-item>
       <el-form-item label="联系电话" prop="contactsPhone">
-        <el-input v-model="form.contactsPhone" />
+        <el-input v-model="form.contactsPhone"/>
       </el-form-item>
       <el-form-item label="微信号" prop="contactsWechat">
-        <el-input v-model="form.contactsWechat" placeholder="可不填" />
+        <el-input v-model="form.contactsWechat" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="邮箱" prop="contactsEmail">
-        <el-input v-model="form.contactsEmail" placeholder="可不填" />
+        <el-input v-model="form.contactsEmail" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="标题" prop="title">
-        <el-input v-model="form.title" placeholder="该内容会展示在最显眼的地方，如一只可爱的三花等一个好人家" />
+        <el-input v-model="form.title" placeholder="该内容会展示在最显眼的地方，如一只可爱的三花等一个好人家"/>
       </el-form-item>
       <el-form-item label="详细描述" prop="text">
-        <el-input v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea" placeholder="内容不得超过300字" />
+        <el-input v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
+                  placeholder="内容不得超过300字"/>
       </el-form-item>
       <el-form-item>
-        <el-button @click="resetForm(formRef)">重置</el-button>
-        <el-button type="primary" @click="submitForm(formRef)">
+        <el-button @click="resetForm()">重置</el-button>
+        <el-button type="primary" @click="submitForm()">
           发布
         </el-button>
       </el-form-item>
     </el-form>
   </div>
 </template>
-  
+
 <script setup>
-import { reactive, ref } from 'vue'
-import { ElMessage } from 'element-plus'
-import { post } from '@/utils/request.js'
-import router from "@/router/index.js";
+import {reactive, ref} from 'vue'
+import {ElMessage} from 'element-plus'
+import {post} from '@/api/request.js'
 
 // 选中文件触发的change事件
-const handleAvatarChangeIcon = (file, fileList) => {
+const handleAvatarChangeIcon = (file) => {
   // 限制文件后缀名
   const isJPG = file.raw.type === 'image/jpeg'
   const isPNG = file.raw.type === 'image/png'
@@ -86,7 +84,8 @@ const handleAvatarChangeIcon = (file, fileList) => {
     return false
   } else {
     // 发起请求
-    var param = new FormData();; //formdata格式
+    let param = new FormData();
+    // form data格式
     param.append("file", file.raw);
     post('/api/file/upload', param, (res) => {
       ElMessage.success('上传成功');
@@ -95,8 +94,6 @@ const handleAvatarChangeIcon = (file, fileList) => {
     })
   }
 }
-
-const formSize = ref('default')
 
 const form = reactive({
   petName: '', // 宠物姓名
@@ -172,7 +169,7 @@ const rules = {
     },
   ],
   contactsPhone: [
-    { required: true, message: '请输入手机号', trigger: 'change', },
+    {required: true, message: '请输入手机号', trigger: 'change',},
     {}
   ],
   contactsWechat: [

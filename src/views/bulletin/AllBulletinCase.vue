@@ -1,12 +1,12 @@
 <template>
   <div style="margin-top: 10px;">
     <ul style="list-style: none; padding: 0;margin: 0;">
-      <li v-for="(pb, index) in pBList" style="height: 140px;">
+      <li v-for="(pb) in pBList" style="height: 140px;">
         <a style="display: flex;">
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
             <el-image fit='cover' style="width: 120px; height: 100% ; "
-              src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png" />
+                      src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
           </div>
           <!-- 标题 -->
           <div style="flex: 1;">
@@ -14,7 +14,7 @@
             <!-- 发布时间 -->
             <el-text>
               <el-icon>
-                <Calendar />
+                <Calendar/>
               </el-icon>
               {{ pb.gmtModified }}
             </el-text>
@@ -22,7 +22,7 @@
               <!-- 领养地址 -->
               <el-text truncated>
                 <el-icon>
-                  <Location />
+                  <Location/>
                 </el-icon>
                 {{ pb.location }}
               </el-text>
@@ -41,11 +41,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
-import { Calendar, Location } from '@element-plus/icons-vue'
-import { ElMessage } from 'element-plus';
-import { get } from '@/utils/request.js'
+import {ref} from 'vue'
+import {Calendar, Location} from '@element-plus/icons-vue'
+import {ElMessage} from 'element-plus';
+import {get} from '@/api/request.js'
 
 const pBList = ref([])
 
@@ -53,7 +52,7 @@ const pBList = ref([])
 get('/api/pet/getAllPB', (data) => {
   pBList.value = data
 }, (err) => {
-  ElMessage.err(err)
+  ElMessage.error(err)
 })
 
 </script>
