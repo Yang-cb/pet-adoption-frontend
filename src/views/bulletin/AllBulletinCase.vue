@@ -6,7 +6,7 @@
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
             <el-image fit='cover' style="width: 120px; height: 100% ; "
-                      src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"/>
+                      v-bind:src="pb.picData"/>
           </div>
           <!-- 标题 -->
           <div style="flex: 1;">
@@ -43,16 +43,22 @@
 <script setup>
 import {ref} from 'vue'
 import {Calendar, Location} from '@element-plus/icons-vue'
-import {ElMessage} from 'element-plus';
+import {ElMessage} from 'element-plus'
 import {get} from '@/api/request.js'
+import {base64ToUrl} from '@/utils'
 
 const pBList = ref([])
 
 // 获取数据
 get('/api/pet/getAllPB', (data) => {
+  for (let i = 0; i < data.length; i++) {
+    data[i].picData = base64ToUrl(data[i].picData)
+  }
+  console.log(data)
   pBList.value = data
 }, (err) => {
   ElMessage.error(err)
+
 })
 
 </script>

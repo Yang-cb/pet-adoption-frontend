@@ -9,6 +9,8 @@ import AllPB from "@/views/bulletin/AllBulletinCase.vue";
 import PublishAway from "@/views/publish/PublishAwayCase.vue";
 import PublishAdopt from "@/views/publish/PublishAdoptCase.vue";
 import PersonalData from "@/views/account/PersonalDataCase.vue";
+import PersonalCollect from "@/views/account/PersonalCollectCase.vue";
+import PersonalPost from "@/views/account/PersonalPostCase.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -57,7 +59,19 @@ const router = createRouter({
                 {
                     path: '/personalData',
                     name: '个人页',
-                    component: PersonalData
+                    component: PersonalData,
+                    children: [
+                        {
+                            path: 'post',
+                            name: '个人发帖',
+                            component: PersonalPost
+                        },
+                        {
+                            path: 'collect',
+                            name: '个人收藏',
+                            component: PersonalCollect
+                        }
+                    ]
                 }
             ]
         }

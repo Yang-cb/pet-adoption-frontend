@@ -2,16 +2,12 @@
 import {logout} from '@/api/request.js'
 import router from "@/router/index.js";
 import {ref} from 'vue'
-import {Document, Location, Setting, Menu} from '@element-plus/icons-vue'
+import {Location, Setting, Menu} from '@element-plus/icons-vue'
 
 // 菜单是否收起
 const isCollapse = ref(false)
 
-//index 就是要跳转的路由
-function menuClick(index) {
-  router.push(index)
-}
-
+// 退出登录
 function userLogout() {
   logout(() => router.push("/"))
 }
@@ -67,8 +63,8 @@ function userLogout() {
                 default-active="2"
                 class="el-menu-vertical-demo"
                 :collapse="isCollapse"
-                @select="menuClick"
                 :collapse-transition="false"
+                router
             >
               <el-sub-menu index="1">
                 <template #title>
@@ -96,18 +92,6 @@ function userLogout() {
                 <el-menu-item index="/index/publishAway">求抱走</el-menu-item>
                 <el-menu-item index="/index/publishAdopt">想领养</el-menu-item>
               </el-sub-menu>
-              <el-menu-item index="3" disabled>
-                <el-icon>
-                  <document/>
-                </el-icon>
-                <template #title>Navigator Three</template>
-              </el-menu-item>
-              <el-menu-item index="4">
-                <el-icon>
-                  <setting/>
-                </el-icon>
-                <template #title>Navigator Four</template>
-              </el-menu-item>
             </el-menu>
           </el-scrollbar>
         </el-aside>
