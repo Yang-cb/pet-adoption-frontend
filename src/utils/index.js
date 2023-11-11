@@ -3,4 +3,9 @@ const base64ToUrl = (base64) => {
     return 'data:image/png;base64,' + base64
 }
 
-export {base64ToUrl}
+// 日期str转Date
+const strToDate = (dateStr) => {
+    return new Date(dateStr)
+}
+
+export {base64ToUrl, strToDate}

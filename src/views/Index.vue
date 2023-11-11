@@ -11,6 +11,12 @@ const isCollapse = ref(false)
 function userLogout() {
   logout(() => router.push("/"))
 }
+
+// 收起菜单前往个人资料
+const toPersonalData = () => {
+  isCollapse.value = true;
+  router.push('/personalData');
+}
 </script>
 
 <template>
@@ -43,7 +49,7 @@ function userLogout() {
             <template #dropdown>
               <el-dropdown-menu>
                 <el-dropdown-item>
-                  <el-button type='' link @click="router.push('/personalData')">编辑个人资料</el-button>
+                  <el-button type='' link @click="toPersonalData">编辑个人资料</el-button>
                 </el-dropdown-item>
                 <el-dropdown-item>
                   <el-button type='' link @click="userLogout">退出登录</el-button>
@@ -56,44 +62,41 @@ function userLogout() {
 
       <el-container>
         <!-- 侧边栏容器 -->
-        <el-aside :width="isCollapse?'64px':'200px'">
-          <!-- 滚动条 -->
-          <el-scrollbar>
-            <el-menu
-                default-active="2"
-                class="el-menu-vertical-demo"
-                :collapse="isCollapse"
-                :collapse-transition="false"
-                router
-            >
-              <el-sub-menu index="1">
-                <template #title>
-                  <el-icon>
-                    <location/>
-                  </el-icon>
-                  <span>Navigator One</span>
-                </template>
-                <el-menu-item-group>
-                  <template #title><span>Group One</span></template>
-                  <el-menu-item index="/index/allPB">全部宠物</el-menu-item>
-                  <el-menu-item index="1-2">item two</el-menu-item>
-                </el-menu-item-group>
-                <el-menu-item-group title="Group Two">
-                  <el-menu-item index="1-3">item three</el-menu-item>
-                </el-menu-item-group>
-              </el-sub-menu>
-              <el-sub-menu index="2">
-                <template #title>
-                  <el-icon>
-                    <location/>
-                  </el-icon>
-                  <span>发布领养信息</span>
-                </template>
-                <el-menu-item index="/index/publishAway">求抱走</el-menu-item>
-                <el-menu-item index="/index/publishAdopt">想领养</el-menu-item>
-              </el-sub-menu>
-            </el-menu>
-          </el-scrollbar>
+        <el-aside :width="isCollapse?'0px':'200px'">
+          <el-menu
+              default-active="2"
+              class="el-menu-vertical-demo"
+              :collapse="isCollapse"
+              :collapse-transition="false"
+              router
+          >
+            <el-sub-menu index="1">
+              <template #title>
+                <el-icon>
+                  <location/>
+                </el-icon>
+                <span>Navigator One</span>
+              </template>
+              <el-menu-item-group>
+                <template #title><span>Group One</span></template>
+                <el-menu-item index="/index/allPB">全部宠物</el-menu-item>
+                <el-menu-item index="1-2">item two</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group title="Group Two">
+                <el-menu-item index="1-3">item three</el-menu-item>
+              </el-menu-item-group>
+            </el-sub-menu>
+            <el-sub-menu index="2">
+              <template #title>
+                <el-icon>
+                  <location/>
+                </el-icon>
+                <span>发布领养信息</span>
+              </template>
+              <el-menu-item index="/index/publishAway">求抱走</el-menu-item>
+              <el-menu-item index="/index/publishAdopt">想领养</el-menu-item>
+            </el-sub-menu>
+          </el-menu>
         </el-aside>
 
         <!-- 主要区域容器 -->
