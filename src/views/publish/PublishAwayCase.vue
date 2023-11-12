@@ -2,9 +2,10 @@
 
 <template>
   <div style="margin: 20px;">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm" status-icon>
+    <el-form style="width: 90%;" ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm"
+             status-icon>
       <el-form-item label="宠物姓名">
-        <el-input v-model="form.petName" placeholder="如果不知道，可不填"/>
+        <el-input maxlength="5" v-model="form.petName" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="宠物种类" prop="petType">
         <el-radio-group v-model="form.petType">
@@ -30,30 +31,35 @@
           <el-button type="primary">选取文件</el-button>
         </el-upload>
       </el-form-item>
-      <el-form-item label="出生日期" prop="birthdate">
-        <el-date-picker v-model="form.birthdate" type="date" placeholder="宠物出生日期" style="width: 100%"/>
+      <el-form-item label="领养地区" prop="firstLocation">
+        <el-cascader placeholder="请选择"
+                     style="width: 100%"
+                     :options="options"
+                     v-model="form.firstLocation"
+                     @change="locHandleChange(form.firstLocation)">
+        </el-cascader>
       </el-form-item>
-      <el-form-item label="领养地址" prop="location">
-        <el-input v-model="form.location"/>
+      <el-form-item label="详细地址" prop="lastLocation">
+        <el-input v-model="form.lastLocation" placeholder="请输入"/>
       </el-form-item>
       <el-form-item label="联系人" prop="contactsName">
-        <el-input v-model="form.contactsName"/>
+        <el-input minlength="1" maxlength="5" v-model="form.contactsName"/>
       </el-form-item>
       <el-form-item label="联系电话" prop="contactsPhone">
-        <el-input v-model="form.contactsPhone"/>
+        <el-input minlength="11" maxlength="11" v-model="form.contactsPhone"/>
       </el-form-item>
       <el-form-item label="微信号" prop="contactsWechat">
-        <el-input v-model="form.contactsWechat" placeholder="可不填"/>
+        <el-input maxlength="11" v-model="form.contactsWechat" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="邮箱" prop="contactsEmail">
-        <el-input v-model="form.contactsEmail" placeholder="可不填"/>
+        <el-input minlength="6" v-model="form.contactsEmail" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="标题" prop="title">
-        <el-input v-model="form.title" placeholder="该内容会展示在最显眼的地方，如一只可爱的三花等一个好人家"/>
+        <el-input maxlength="20" v-model="form.title" placeholder="如一只可爱的三花等一个好人家"/>
       </el-form-item>
       <el-form-item label="详细描述" prop="text">
-        <el-input v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
-                  placeholder="内容不得超过300字"/>
+        <el-input maxlength="300" v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
+                  placeholder="请描述宠物, 内容不得超过300字"/>
       </el-form-item>
       <el-form-item>
         <el-button @click="resetForm()">重置</el-button>
@@ -69,6 +75,13 @@
 import {reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {post} from '@/api/request.js'
+import {options, handleChange} from "@/utils";
+
+// 表单选择地址
+const locStr = ref('')
+const locHandleChange = (locArr) => {
+  locStr.value = handleChange(locArr);
+}
 
 // 选中文件触发的change事件
 const handleAvatarChangeIcon = (file) => {
@@ -101,8 +114,8 @@ const form = reactive({
   petType: 'cat', // 宠物种类
   sex: '1', // 宠物性别
   isFree: '1', // 是否免费
-  birthdate: '', // 出生日期
-  location: '', // 领养地址
+  firstLocation: '', // 地址选择片段
+  lastLocation: '', // 地址输入片段
   pictureId: '', // 图片id
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
@@ -123,82 +136,38 @@ const validateFileUrl = (rule, value, callback) => {
 
 const rules = {
   petType: [
-    {
-      required: true,
-      message: '请选择种类',
-      trigger: 'change',
-    },
+    {required: true, message: '请选择种类', trigger: 'change'}
   ],
   sex: [
-    {
-      required: true,
-      message: '请选择性别',
-      trigger: 'change',
-    },
+    {required: true, message: '请选择性别', trigger: 'change',}
   ],
-  birthdate: [
-    {
-      type: 'date',
-      message: '请输入出生日期',
-      trigger: 'change',
-    },
-    {
-      type: 'date',
-      message: '请输入正确的出生日期',
-      trigger: 'change'
-    }
+  firstLocation: [
+    {required: true, message: '请选择地区', trigger: 'change',},
   ],
-  location: [
-    {
-      required: true,
-      message: '请输入领养地址',
-      trigger: 'change',
-    },
+  lastLocation: [
+    {required: true, message: '请输入详细地址', trigger: 'change',},
   ],
   pictureId: [
-    {
-      required: true,
-      validator: validateFileUrl,
-      trigger: 'change'
-    },
+    {required: true, validator: validateFileUrl, trigger: 'change'},
   ],
   contactsName: [
-    {
-      required: true,
-      message: '请输入联系人',
-      trigger: 'change',
-    },
+    {required: true, message: '请输入联系人', trigger: 'change',},
   ],
   contactsPhone: [
     {required: true, message: '请输入手机号', trigger: 'change',},
     {}
   ],
   contactsWechat: [
-    {
-      message: '请输入合法的微信地址',
-      trigger: 'change',
-    },
+    {message: '请输入合法的微信地址', trigger: 'change'}
   ],
   contactsEmail: [
-    {
-      type: 'email',
-      message: '请输入合法的电子邮件地址',
-      trigger: ['blur']
-    }
+    {type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur']}
   ],
   title: [
-    {
-      required: true,
-      message: '请输入标题',
-      trigger: 'blur',
-    },
+    {required: true, message: '请输入标题', trigger: 'blur',},
   ],
   text: [
-    {
-      required: true,
-      message: '请详细描述宠物信息',
-      trigger: 'blur',
-    },
+    {required: true, message: '请详细描述宠物信息', trigger: 'blur',},
   ],
 }
 
@@ -214,8 +183,7 @@ const submitForm = async () => {
         petType: form.petType,
         sex: form.sex,
         isFree: form.isFree,
-        birthdate: form.birthdate,
-        location: form.location,
+        location: locStr.value + form.lastLocation,
         pictureId: form.pictureId,
         contactsName: form.contactsName,
         contactsPhone: form.contactsPhone,
@@ -238,3 +206,6 @@ const resetForm = () => {
   formRef.value.resetFields();
 }
 </script>
+
+<style>
+</style>

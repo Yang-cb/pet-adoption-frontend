@@ -1,7 +1,8 @@
 <!-- 发布宠物领养信息 -->
 <template>
   <div style="margin: 20px;">
-    <el-form ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm" status-icon>
+    <el-form style="width: 90%;" ref="formRef" :model="form" :rules="rules" label-width="150px" class="demo-ruleForm"
+             status-icon>
       <el-form-item label="宠物种类" prop="petType">
         <el-radio-group v-model="form.petType">
           <el-radio-button label="cat">猫猫</el-radio-button>
@@ -19,26 +20,34 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="form.isFree" active-value="1" inactive-value="0"/>
       </el-form-item>
-      <el-form-item label="我的地址" prop="location">
-        <el-input v-model="form.location"/>
+      <el-form-item label="我的地区" prop="firstLocation">
+        <el-cascader placeholder="请选择"
+                     style="width: 100%"
+                     :options="options"
+                     v-model="form.firstLocation"
+                     @change="locHandleChange(form.firstLocation)">
+        </el-cascader>
+      </el-form-item>
+      <el-form-item label="我的详细地址" prop="lastLocation">
+        <el-input v-model="form.lastLocation" placeholder="请输入"/>
       </el-form-item>
       <el-form-item label="联系人" prop="contactsName">
-        <el-input v-model="form.contactsName"/>
+        <el-input minlength="1" maxlength="5" v-model="form.contactsName"/>
       </el-form-item>
       <el-form-item label="联系电话" prop="contactsPhone">
-        <el-input v-model="form.contactsPhone"/>
+        <el-input minlength="11" maxlength="11" v-model="form.contactsPhone"/>
       </el-form-item>
       <el-form-item label="微信号" prop="contactsWechat">
-        <el-input v-model="form.contactsWechat" placeholder="可不填"/>
+        <el-input maxlength="11" v-model="form.contactsWechat" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="邮箱" prop="contactsEmail">
-        <el-input v-model="form.contactsEmail" placeholder="可不填"/>
+        <el-input minlength="6" v-model="form.contactsEmail" placeholder="可不填"/>
       </el-form-item>
       <el-form-item label="标题" prop="title">
-        <el-input v-model="form.title" placeholder="请简述你为什么要领养,该内容会展示在最显眼的地方"/>
+        <el-input maxlength="20" v-model="form.title" placeholder="请简述你为什么要领养，内容不得超过20字"/>
       </el-form-item>
       <el-form-item label="详细描述" prop="text">
-        <el-input v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
+        <el-input maxlength="300" v-model="form.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
                   placeholder="请描述你能为宠物提供什么, 内容不得超过300字"/>
       </el-form-item>
       <el-form-item>
@@ -55,12 +64,20 @@
 import {reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {post} from '@/api/request.js'
+import {handleChange, options} from '@/utils'
+
+const locStr = ref('')
+
+const locHandleChange = (locArr) => {
+  locStr.value = handleChange(locArr);
+}
 
 const form = reactive({
   petType: 'cat', // 宠物种类
   sex: '1', // 宠物性别
   isFree: '0', // 愿意付费 1是0否
-  location: '', // 我的地址
+  firstLocation: '', // 地址选择片段
+  lastLocation: '', // 地址输入片段
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
   contactsWechat: '', // 微信
@@ -71,63 +88,35 @@ const form = reactive({
 
 const rules = {
   petType: [
-    {
-      required: true,
-      message: '请选择种类',
-      trigger: 'change',
-    },
+    {required: true, message: '请选择种类', trigger: 'change',},
   ],
   sex: [
-    {
-      required: true,
-      message: '请选择性别',
-      trigger: 'change',
-    },
+    {required: true, message: '请选择性别', trigger: 'change',},
   ],
-  location: [
-    {
-      required: true,
-      message: '请输入您的地址',
-      trigger: 'change',
-    },
+  firstLocation: [
+    {required: true, message: '请选择地区', trigger: 'change',},
+  ],
+  lastLocation: [
+    {required: true, message: '请输入详细地址', trigger: 'change',},
   ],
   contactsName: [
-    {
-      required: true,
-      message: '请输入联系人',
-      trigger: 'change',
-    },
+    {required: true, message: '请输入联系人', trigger: 'change'}
   ],
   contactsPhone: [
     {required: true, message: '请输入手机号', trigger: 'change',},
     {}
   ],
   contactsWechat: [
-    {
-      message: '请输入合法的微信地址',
-      trigger: 'change',
-    },
+    {message: '请输入合法的微信地址', trigger: 'change',},
   ],
   contactsEmail: [
-    {
-      type: 'email',
-      message: '请输入合法的电子邮件地址',
-      trigger: ['blur']
-    }
+    {type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur']}
   ],
   title: [
-    {
-      required: true,
-      message: '请输入领养标题',
-      trigger: 'blur',
-    },
+    {required: true, message: '请输入领养标题', trigger: 'blur'}
   ],
   text: [
-    {
-      required: true,
-      message: '请详细描述您的信息',
-      trigger: 'blur',
-    },
+    {required: true, message: '请详细描述您的信息', trigger: 'blur'},
   ],
 }
 
@@ -142,7 +131,7 @@ const submitForm = async () => {
         petType: form.petType,
         sex: form.sex,
         isFree: form.isFree,
-        location: form.location,
+        location: locStr.value + form.lastLocation,
         contactsName: form.contactsName,
         contactsPhone: form.contactsPhone,
         contactsWechat: form.contactsWechat,

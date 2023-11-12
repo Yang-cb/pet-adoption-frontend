@@ -5,7 +5,7 @@ import {ref} from 'vue'
 import {Location, Setting, Menu} from '@element-plus/icons-vue'
 
 // 菜单是否收起
-const isCollapse = ref(false)
+const isCollapse = ref(true)
 
 // 退出登录
 function userLogout() {
