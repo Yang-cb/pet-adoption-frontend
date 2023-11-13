@@ -161,7 +161,7 @@
 import {reactive, ref} from 'vue'
 import {get, post} from '@/api/request.js'
 import {ElMessage, ElDrawer} from "element-plus";
-import {takeUsername} from '@/api/request.js'
+import {takeAccId} from '@/api/request.js'
 import {base64ToUrl, strToDate, options, handleChange} from '@/utils'
 import {Edit, Location} from "@element-plus/icons-vue";
 
@@ -198,7 +198,7 @@ const viewImgData = ref('')
 const personalData = ref([])
 
 // 获取当前登录者数据
-get('/api/account?username=' + takeUsername(), (data) => {
+get('/api/account?id=' + takeAccId(), (data) => {
   viewImgData.value = base64ToUrl(data.picData)
   personalData.value = data
   console.log(data)
@@ -290,8 +290,8 @@ const submitForm = async () => {
               loading.value = false
             }, 400)
           }, 2000)
-          post('/api/account/updateAccountByUsername', {
-            username: takeUsername(),
+          post('/api/account/updateAccountById', {
+            id: takeAccId(),
             nikeName: form.nikeName,
             signature: form.signature === '' ? '什么都没有留下...' : form.signature,
             location: locStr.value === '' ? '未知' : locStr.value,

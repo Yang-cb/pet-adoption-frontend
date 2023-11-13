@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import {get, takeUsername} from '@/api/request.js'
+import {get, takeAccId} from '@/api/request.js'
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
@@ -58,7 +58,7 @@ const pBData = ref([])
 
 // 收藏
 const collectPB = () => {
-  get('/api/account/collectPB?username=' + takeUsername + '&petId=' + route.query.petId,
+  get('/api/account/collectPB?username=' + takeAccId + '&petId=' + route.query.petId,
       () => {
         ElMessage.success('收藏成功')
       }, (err) => {

@@ -21,11 +21,12 @@ const defaultFailure = (message, status, url) => {
 const authItemName = "authorize"
 
 // 储存用户登录数据
-function storeAccessToken(remember, token, expire, username) {
+function storeAccessToken(remember, token, expire, username, id) {
     const authObj = {
         token: token,
         expire: expire,
-        username: username
+        username: username,
+        id: id
     }
     const str = JSON.stringify(authObj)
     // 是否勾选记住我
@@ -57,8 +58,8 @@ function takeAccessToken() {
     return authObj.token
 }
 
-// 获取用户登录数据的username
-function takeUsername() {
+// 获取用户登录数据的id
+function takeAccId() {
     const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
     if (!str) return null
     const authObj = JSON.parse(str)
@@ -67,7 +68,7 @@ function takeUsername() {
         ElMessage.warning("登录状态已过期，请重新登录")
         return null
     }
-    return authObj.username
+    return authObj.id
 }
 
 function initPost(url, data, headers, success, failure, error = defaultError) {
@@ -132,4 +133,4 @@ function unauthorized() {
     return !takeAccessToken()
 }
 
-export {post, get, login, logout, unauthorized, takeAccessToken, takeUsername}
+export {post, get, login, logout, unauthorized, takeAccessToken, takeAccId}
