@@ -140,15 +140,51 @@
       </div>
     </div>
   </el-drawer>
+  <!-- 修改界面点击空白显示的对话框 -->
+  <el-dialog
+      v-model="dialogVisible"
+      title="Tips"
+      width="30%"
+  >
+    <span>你有未保存的变更</span>
+    <template #footer>
+      <span>
+        <el-button @click="exitWithoutSave">不保存并关闭页面</el-button>
+        <el-button type="primary" @click="saveAndExit">保存并关闭页面</el-button>
+        <el-button @click="dialogVisible = false">返回编辑</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
 import {reactive, ref} from 'vue'
 import {get, post} from '@/api/request.js'
-import {ElMessage, ElDrawer, ElMessageBox} from "element-plus";
+import {ElMessage, ElDrawer} from "element-plus";
 import {takeUsername} from '@/api/request.js'
 import {base64ToUrl, strToDate, options, handleChange} from '@/utils'
 import {Edit, Location} from "@element-plus/icons-vue";
+
+const dialogVisible = ref(false)
+// 修改界面点击空白显示对话框
+const handleClose = () => {
+  if (loading.value) {
+    return
+  }
+  dialogVisible.value = true
+}
+
+// 保存并退出
+const saveAndExit = () => {
+  submitForm()
+  dialogVisible.value = false
+}
+
+// 不保存并退出
+const exitWithoutSave = () => {
+  dialogVisible.value = false
+  modifyDr.value = false
+}
 
 // 表单选择地址
 const locStr = ref('')
@@ -271,19 +307,6 @@ const submitForm = async () => {
         }
       }
   )
-}
-
-const handleClose = (done) => {
-  if (loading.value) {
-    return
-  }
-  ElMessageBox.confirm('你想要提交吗?')
-      .then(() => {
-        submitForm()
-      })
-      .catch(() => {
-        // catch error
-      })
 }
 
 const cancelForm = () => {

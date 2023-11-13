@@ -26,7 +26,8 @@
       </el-form-item>
       <el-form-item label="宠物照片" prop="pictureId">
         <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
-        <el-upload v-model="form.pictureId" :auto-upload="false" :action="''" :show-file-list="true"
+        <el-upload v-model="form.pictureId" :auto-upload="false"
+                   :action="''" :show-file-list="true"
                    :on-change="handleAvatarChangeIcon">
           <el-button type="primary">选取文件</el-button>
         </el-upload>

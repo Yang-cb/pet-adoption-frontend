@@ -1,8 +1,8 @@
 <template>
   <div style="margin-top: 10px;">
-    <ul style="list-style: none; padding: 0;margin: 0;">
-      <li v-for="(pb) in pBList" style="height: 140px;">
-        <a style="display: flex;">
+    <ul style="list-style: none; padding: 0;margin: 0; display: flex;">
+      <li v-for="(pb) in pBList" style="width: 50% ;height: 140px; ">
+        <a @click="petData(pb.id)" style="display: flex;">
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
             <el-image fit='cover' style="width: 120px; height: 100% ; "
@@ -46,6 +46,18 @@ import {Calendar, Location} from '@element-plus/icons-vue'
 import {ElMessage} from 'element-plus'
 import {get} from '@/api/request.js'
 import {base64ToUrl} from '@/utils'
+import {useRouter} from 'vue-router'
+
+// 跳转页面并传递petId
+const router = useRouter();
+const petData = (petId) => {
+  router.push({
+    path: 'onePBData',
+    query: {
+      petId: petId
+    }
+  })
+}
 
 const pBList = ref([])
 
@@ -58,7 +70,6 @@ get('/api/pet/getAllPB', (data) => {
   pBList.value = data
 }, (err) => {
   ElMessage.error(err)
-
 })
 
 </script>

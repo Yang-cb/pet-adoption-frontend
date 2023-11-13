@@ -11,6 +11,7 @@ import PublishAdopt from "@/views/publish/PublishAdoptCase.vue";
 import PersonalData from "@/views/account/PersonalDataCase.vue";
 import PersonalCollect from "@/views/account/PersonalCollectCase.vue";
 import PersonalPost from "@/views/account/PersonalPostCase.vue";
+import OneBulletinData from "@/views/bulletin/OneBulletinDataCase.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -47,6 +48,10 @@ const router = createRouter({
                     path: 'allPB',
                     name: '展示全部布告',
                     component: AllPB
+                }, {
+                    path: 'onePBData',
+                    name: '展示一个布告详细',
+                    component: OneBulletinData
                 }, {
                     path: 'publishAway',
                     name: '发布宠物求抱走信息',

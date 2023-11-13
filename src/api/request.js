@@ -112,7 +112,7 @@ function login(username, password, remember, success, failure = defaultFailure) 
         // axios只支持json数据，而security只能表单登录
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(remember, data.token, data.expireTime, data.username)
+        storeAccessToken(remember, data.token, data.expireTime, data.username, data.id)
         ElMessage.success('登录成功')
         success(data)
     }, failure)
