@@ -1,8 +1,24 @@
-<script lang="ts" setup>
+<script setup>
 import {logout} from '@/api/request.js'
 import router from "@/router/index.js";
 import {ref} from 'vue'
-import {Location, Setting, Menu} from '@element-plus/icons-vue'
+import {Location, Menu, ArrowDownBold} from '@element-plus/icons-vue'
+import {ElMessage} from "element-plus";
+import {get, takeAccId} from "@/api/request.js";
+import {base64ToUrl} from "@/utils";
+
+// 用户数据
+const personalData = ref([])
+// 图片数据
+const viewImgData = ref('')
+
+get('/api/account?id=' + takeAccId(), (data) => {
+  data.picData = base64ToUrl(data.picData)
+  viewImgData.value = data.picData
+  personalData.value = data
+}, (err) => {
+  ElMessage.error(err)
+})
 
 // 菜单是否收起
 const isCollapse = ref(true)
@@ -34,27 +50,44 @@ const toPersonalData = () => {
           </el-radio-button>
         </el-radio-group>
         <div class="toolbar">
-
           <!-- 头像 -->
           <div>
-            <el-avatar src="https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png"/>
+            <el-avatar v-bind:src="viewImgData"/>
           </div>
-          <!-- 昵称 -->
-          <span>Tom</span>
           <!-- 下拉菜单 -->
           <el-dropdown>
-            <el-icon style="margin-right: 8px; margin-top: 1px">
-              <setting/>
+            <el-icon style="margin-left: 6px; margin-right: 8px; margin-top: 1px">
+              <ArrowDownBold/>
             </el-icon>
             <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item>
-                  <el-button type='' link @click="toPersonalData">编辑个人资料</el-button>
-                </el-dropdown-item>
-                <el-dropdown-item>
-                  <el-button type='' link @click="userLogout">退出登录</el-button>
-                </el-dropdown-item>
-              </el-dropdown-menu>
+              <div style="width: 180px; padding-top: 20px">
+                <div style="margin-left: 20px; margin-bottom: 20px">
+                  <!-- 头像 -->
+                  <div>
+                    <el-button type='' link @click="toPersonalData">
+                      <el-avatar :size="60" v-bind:src="viewImgData"/>
+                    </el-button>
+                  </div>
+                  <!-- 昵称 -->
+                  <div style="margin-top: 8px; margin-bottom: 2px">
+                    <el-button type='' link @click="toPersonalData"
+                               style="font-size: 14px; font-weight: bold; margin-left: -4px ;">
+                      {{ personalData.nikeName }}
+                    </el-button>
+                  </div>
+                  <div style="font-size: 12px;  color: rgb(133, 133, 133);">
+                    @{{ personalData.username }}
+                  </div>
+                </div>
+                <el-dropdown-menu>
+                  <el-dropdown-item>
+                    <el-button type='' link @click="toPersonalData">个人资料</el-button>
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    <el-button type='' link @click="userLogout">退出登录</el-button>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </div>
             </template>
           </el-dropdown>
         </div>
@@ -135,6 +168,7 @@ const toPersonalData = () => {
   justify-content: center;
   height: 100%;
   right: 20px;
+  margin-right: 30px;
 }
 
 .el-aside {

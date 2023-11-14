@@ -34,9 +34,11 @@
     </div>
 
     <!--    发帖 收藏-->
-    <el-menu style=" margin: 50px 76px; padding: 0 72px; "
-             router
-             mode="horizontal"
+    <el-menu
+        :default-active="'/personalData/post'"
+        style="margin: 50px 76px; padding: 0 72px;"
+        router
+        mode="horizontal"
     >
       <el-menu-item index="/personalData/post">发帖</el-menu-item>
       <el-menu-item index="/personalData/collect">收藏</el-menu-item>

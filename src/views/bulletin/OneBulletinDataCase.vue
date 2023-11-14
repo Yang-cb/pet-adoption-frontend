@@ -8,8 +8,8 @@
       <el-row>
         <el-col :span="12">
           <!-- 图片 -->
-          <div style="width: 260px;height: 260px">
-            <el-image style="width: 100%" v-bind:src="pBData.picData">
+          <div style="width: 300px;height: 300px">
+            <el-image style="width: 100%" v-bind:src="pBData.picData" >
               <template #error>
                 <div style="width: 100%;height: 100%">
                   <el-icon>
@@ -32,7 +32,15 @@
             <p>微信号：{{ pBData.contactsWechat }}</p>
             <p>电子邮件：{{ pBData.contactsEmail }}</p>
           </div>
-          <el-button @click="collectPB">点击收藏</el-button>
+
+          <div>
+            <div>
+              <el-button @click="collectPB">点击收藏</el-button>
+            </div>
+            <div>
+              <el-button @click="cancelCollectPB">取消收藏</el-button>
+            </div>
+          </div>
           <el-button>我想领养它</el-button>
         </el-col>
       </el-row>
@@ -46,7 +54,7 @@
 </template>
 
 <script setup>
-import {get, takeAccId} from '@/api/request.js'
+import {get, post, takeAccId} from '@/api/request.js'
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
@@ -58,12 +66,25 @@ const pBData = ref([])
 
 // 收藏
 const collectPB = () => {
-  get('/api/account/collectPB?username=' + takeAccId + '&petId=' + route.query.petId,
-      () => {
-        ElMessage.success('收藏成功')
-      }, (err) => {
-        ElMessage.error(err)
-      })
+  post('/api/account/collectPB', {
+    accId: takeAccId(),
+    petId: route.query.petId
+  }, () => {
+    ElMessage.success('收藏成功')
+  }, (err) => {
+    ElMessage.error(err)
+  })
+}
+// 取消收藏
+const cancelCollectPB = () => {
+  post('/api/account/cancelCollectPB', {
+    accId: takeAccId(),
+    petId: route.query.petId
+  }, () => {
+    ElMessage.success('取消收藏成功')
+  }, (err) => {
+    ElMessage.error(err)
+  })
 }
 // 种类
 const getType = (petType) => {
@@ -71,6 +92,15 @@ const getType = (petType) => {
     return '其他'
   }
   return petType === 'dog' ? '狗狗' : '猫猫'
+}
+
+const collectAccIds = []
+
+// TODO 该用户是否已收藏该宠物
+const isCollect = (collectAccIds) => {
+  console.log('collectAccIds='+ collectAccIds)
+  let id = takeAccId();
+  return collectAccIds.indexOf(id)
 }
 
 // 获取跳转页面传来的数据
