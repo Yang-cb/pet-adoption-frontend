@@ -5,16 +5,11 @@ import {ref} from 'vue'
 import {Location, Menu, ArrowDownBold} from '@element-plus/icons-vue'
 import {ElMessage} from "element-plus";
 import {get, takeAccId} from "@/api/request.js";
-import {base64ToUrl} from "@/utils";
+import {getImageUrl} from "@/utils";
 
 // 用户数据
 const personalData = ref([])
-// 图片数据
-const viewImgData = ref('')
-
 get('/api/account?id=' + takeAccId(), (data) => {
-  data.picData = base64ToUrl(data.picData)
-  viewImgData.value = data.picData
   personalData.value = data
 }, (err) => {
   ElMessage.error(err)
@@ -52,7 +47,7 @@ const toPersonalData = () => {
         <div class="toolbar">
           <!-- 头像 -->
           <div>
-            <el-avatar v-bind:src="viewImgData"/>
+            <el-avatar v-bind:src="getImageUrl(personalData.picName)" />
           </div>
           <!-- 下拉菜单 -->
           <el-dropdown>
@@ -65,7 +60,7 @@ const toPersonalData = () => {
                   <!-- 头像 -->
                   <div>
                     <el-button type='' link @click="toPersonalData">
-                      <el-avatar :size="60" v-bind:src="viewImgData"/>
+                      <el-avatar :size="60" :src="getImageUrl(personalData.picName)"/>
                     </el-button>
                   </div>
                   <!-- 昵称 -->

@@ -6,7 +6,7 @@
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
             <el-image fit='cover' style="width: 120px; height: 100% ; "
-                      v-bind:src="pb.picData"/>
+                      v-bind:src="pb.picName"/>
           </div>
           <!-- 标题 -->
           <div style="flex: 1;">
@@ -45,7 +45,7 @@ import {ref} from 'vue'
 import {Calendar, Location} from '@element-plus/icons-vue'
 import {ElMessage} from 'element-plus'
 import {get} from '@/api/request.js'
-import {base64ToUrl} from '@/utils'
+import {getImageUrl} from '@/utils'
 import {useRouter} from 'vue-router'
 
 // 跳转页面并传递petId
@@ -64,7 +64,7 @@ const pBList = ref([])
 // 获取数据
 get('/api/pet/getAllPB', (data) => {
   for (let i = 0; i < data.length; i++) {
-    data[i].picData = base64ToUrl(data[i].picData)
+    data[i].picName = getImageUrl(data[i].picName)
   }
   console.log(data)
   pBList.value = data

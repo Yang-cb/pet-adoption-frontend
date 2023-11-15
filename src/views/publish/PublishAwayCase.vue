@@ -78,6 +78,9 @@ import {ElMessage} from 'element-plus'
 import {post} from '@/api/request.js'
 import {options, handleChange} from "@/utils";
 
+const img = ref('')
+console.log(img.value)
+
 // 表单选择地址
 const locStr = ref('')
 const locHandleChange = (locArr) => {
@@ -105,7 +108,9 @@ const handleAvatarChangeIcon = (file) => {
     post('/api/file/upload', param, (res) => {
       ElMessage.success('上传成功');
       // 返回值为图片id
+      img.value = res
       form.pictureId = res
+      console.log(form.pictureId)
     })
   }
 }
@@ -209,4 +214,20 @@ const resetForm = () => {
 </script>
 
 <style>
+.avatar-uploader .el-upload {
+  border: dashed 2px #d8dde3 !important;
+  border-radius: 4px !important;
+  background: #fcfcfc;
+}
+
+.avatar-uploader .avatar-uploader-icon {
+  background: #fcfcfc;
+}
+
+.avatar-uploader .el-icon-plus:before {
+  content: "上传图片" !important;
+  font-size: 12px;
+  color: #000;
+}
+
 </style>

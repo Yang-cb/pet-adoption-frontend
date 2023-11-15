@@ -22,4 +22,9 @@ const handleChange = (selectedOptions) => {
     return location;
 }
 
-export {base64ToUrl, strToDate, options, handleChange}
+// 获取图片路径
+function getImageUrl(name) {
+    return new URL(`../assets/images/${name}`, import.meta.url).href;
+}
+
+export {base64ToUrl, strToDate, options, handleChange, getImageUrl}

@@ -8,7 +8,7 @@
       <!-- 头像 -->
       <div>
         <el-avatar shape="circle" :size="120" :fit=fill
-                   v-bind:src="viewImgData?viewImgData:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'"
+                   v-bind:src="personalData.picName"
                    alt="无法显示" style="transform:translateY(-20px) "/>
       </div>
       <!-- 资料-->
@@ -102,7 +102,7 @@
       <!-- 头像，编辑资料 -->
       <div>
         <el-avatar shape="circle" :size="120" :fit=fill
-                   v-bind:src="viewImgData?viewImgData:'https://cube.elemecdn.com/0/88/03b0d39583f48206768a7534e55bcpng.png'"
+                   v-bind:src="personalData.picName"
                    alt="无法显示" style="transform:translateY(-20px) "/>
         <h4 style="margin: 10px 0">{{ personalData.nikeName }}</h4>
         <el-button @click="dToM">编辑个人资料</el-button>
@@ -164,7 +164,7 @@ import {reactive, ref} from 'vue'
 import {get, post} from '@/api/request.js'
 import {ElMessage, ElDrawer} from "element-plus";
 import {takeAccId} from '@/api/request.js'
-import {base64ToUrl, strToDate, options, handleChange} from '@/utils'
+import {base64ToUrl, strToDate, options, handleChange, getImageUrl} from '@/utils'
 import {Edit, Location} from "@element-plus/icons-vue";
 
 const dialogVisible = ref(false)
@@ -194,16 +194,14 @@ const locHandleChange = (locArr) => {
   locStr.value = handleChange(locArr);
 }
 
-// 图片数据
-const viewImgData = ref('')
 // 用户数据
 const personalData = ref([])
 
 // 获取当前登录者数据
 get('/api/account?id=' + takeAccId(), (data) => {
-  viewImgData.value = base64ToUrl(data.picData)
+  data.picName = getImageUrl(data.picName)
   personalData.value = data
-  console.log(data)
+  console.log(personalData.value)
 }, (err) => {
   ElMessage.error(err)
 })
