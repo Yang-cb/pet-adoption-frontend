@@ -22,9 +22,15 @@ const handleChange = (selectedOptions) => {
     return location;
 }
 
-// 获取图片路径
-function getImageUrl(name) {
-    return new URL(`../assets/images/${name}`, import.meta.url).href;
+// 获取宠物图片路径
+function getPetImageUrl(name) {
+    return new URL(`../assets/images/pet/${name}`, import.meta.url).href;
 }
 
-export {base64ToUrl, strToDate, options, handleChange, getImageUrl}
+
+// 获取用户图片路径
+function getAccImageUrl(name) {
+    return new URL(`../assets/images/acc/${name}`, import.meta.url).href;
+}
+
+export {base64ToUrl, strToDate, options, handleChange, getPetImageUrl, getAccImageUrl}

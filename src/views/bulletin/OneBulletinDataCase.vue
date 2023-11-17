@@ -9,7 +9,7 @@
         <el-col :span="12">
           <!-- 图片 -->
           <div style="width: 300px;height: 300px">
-            <el-image style="width: 100%" v-bind:src="pBData.picName" >
+            <el-image style="width: 100%" v-bind:src="pBData.picName">
               <template #error>
                 <div style="width: 100%;height: 100%">
                   <el-icon>
@@ -59,7 +59,7 @@ import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
 import {Picture as IconPicture} from '@element-plus/icons-vue'
 import {ref} from "vue";
-import {base64ToUrl, getImageUrl} from "@/utils";
+import {getPetImageUrl} from "@/utils";
 
 const pBData = ref([])
 
@@ -98,7 +98,7 @@ const collectAccIds = []
 
 // TODO 该用户是否已收藏该宠物
 const isCollect = (collectAccIds) => {
-  console.log('collectAccIds='+ collectAccIds)
+  console.log('collectAccIds=' + collectAccIds)
   let id = takeAccId();
   return collectAccIds.indexOf(id)
 }
@@ -106,7 +106,7 @@ const isCollect = (collectAccIds) => {
 // 获取跳转页面传来的数据
 const route = useRoute();
 get('/api/pet/getPBByPetId?petId=' + route.query.petId, (data) => {
-  data.picName = getImageUrl(data.picName)
+  data.picName = getPetImageUrl(data.picName)
   console.log(data)
   pBData.value = data
 }, (err) => {

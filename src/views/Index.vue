@@ -5,7 +5,7 @@ import {ref} from 'vue'
 import {Location, Menu, ArrowDownBold} from '@element-plus/icons-vue'
 import {ElMessage} from "element-plus";
 import {get, takeAccId} from "@/api/request.js";
-import {getImageUrl} from "@/utils";
+import {getAccImageUrl} from "@/utils";
 
 // 用户数据
 const personalData = ref([])
@@ -16,7 +16,7 @@ get('/api/account?id=' + takeAccId(), (data) => {
 })
 
 // 菜单是否收起
-const isCollapse = ref(true)
+const isCollapse = ref(false)
 
 // 退出登录
 function userLogout() {
@@ -47,7 +47,7 @@ const toPersonalData = () => {
         <div class="toolbar">
           <!-- 头像 -->
           <div>
-            <el-avatar v-bind:src="getImageUrl(personalData.picName)" />
+            <el-avatar v-bind:src="getAccImageUrl(personalData.picName)" />
           </div>
           <!-- 下拉菜单 -->
           <el-dropdown>
@@ -60,7 +60,7 @@ const toPersonalData = () => {
                   <!-- 头像 -->
                   <div>
                     <el-button type='' link @click="toPersonalData">
-                      <el-avatar :size="60" :src="getImageUrl(personalData.picName)"/>
+                      <el-avatar :size="60" :src="getAccImageUrl(personalData.picName)"/>
                     </el-button>
                   </div>
                   <!-- 昵称 -->

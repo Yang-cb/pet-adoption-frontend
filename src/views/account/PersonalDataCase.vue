@@ -100,10 +100,15 @@
     <div class="title" style="margin: 0; padding: 0"></div>
     <div style="display: flex; justify-content: center; text-align: center; height: 220px">
       <!-- 头像，编辑资料 -->
-      <div>
+      <div style="position: relative">
         <el-avatar shape="circle" :size="120" :fit=fill
                    v-bind:src="personalData.picName"
                    alt="无法显示" style="transform:translateY(-20px) "/>
+        <!-- 修改头像 -->
+        <el-button :icon="Edit" circle
+                   style="position: absolute; bottom: 120px; right: 0"
+                   @click="setAccPic = true"
+        />
         <h4 style="margin: 10px 0">{{ personalData.nikeName }}</h4>
         <el-button @click="dToM">编辑个人资料</el-button>
       </div>
@@ -157,6 +162,36 @@
       </span>
     </template>
   </el-dialog>
+
+  <!-- 修改头像对话框 -->
+  <el-dialog v-model="setAccPic" title="修改头像" style="width: 500px;">
+    <el-form :model="form">
+      <el-form-item>
+        <el-upload
+            :limit="1"
+            list-type="picture-card"
+            :auto-upload="false"
+            :action="''"
+            show-file-list
+            :on-exceed="handleExceed"
+            :on-change="change"
+        >
+          <i class="el-icon-plus">+</i>
+        </el-upload>
+        <el-dialog :visible.sync="dialogVisible">
+          <img width="100%" :src="accPic" alt="">
+        </el-dialog>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="cancelSubmit">取消</el-button>
+        <el-button type="primary" @click="submitAccPic">
+          提交
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -164,8 +199,69 @@ import {reactive, ref} from 'vue'
 import {get, post} from '@/api/request.js'
 import {ElMessage, ElDrawer} from "element-plus";
 import {takeAccId} from '@/api/request.js'
-import {base64ToUrl, strToDate, options, handleChange, getImageUrl} from '@/utils'
+import {strToDate, options, handleChange, getAccImageUrl} from '@/utils'
 import {Edit, Location} from "@element-plus/icons-vue";
+
+// 修改头像对话框是否显示
+const setAccPic = ref(false)
+// 回显图片
+const accPic = ref('')
+// 添加的图片
+const dataList = ref('')
+
+// 取消提交
+const cancelSubmit = () => {
+  dataList.value = null
+  setAccPic.value = false
+}
+
+// 提交头像
+const submitAccPic = () => {
+  // formData格式
+  const formData = new FormData();
+  if (dataList.value.length === 0 || !dataList.value) {
+    ElMessage.error('请上传图片');
+    return false;
+  }
+  formData.append('file', dataList.value[0]);
+  formData.append("id", takeAccId());
+  formData.append("type", "acc")
+  post('/api/account/updateAccPic', formData, (res) => {
+    ElMessage.success('上传成功');
+    // 返回值为图片对象
+    accPic.value = getAccImageUrl(res.picName)
+    location.reload();
+  })
+}
+
+// 超出limit时触发的方法
+const handleExceed = () => {
+  ElMessage.warning('只能上传一个文件')
+}
+
+// 选中文件触发的change事件
+const change = (file, fileList) => {
+  // 限制文件后缀名
+  const isJPG = file.raw.type === 'image/jpeg'
+  const isPNG = file.raw.type === 'image/png'
+  // 限制上传文件的大小
+  const isLt3M = file.raw.size / 1024 / 1024 < 3
+  if (!isPNG && !isJPG) {
+    ElMessage.error('图片只能是 JPG/PNG 格式')
+    return false
+  } else if (!isLt3M) {
+    ElMessage.error('图片应在3MB以内')
+    return false
+  } else {
+    let arr = [];
+    fileList.forEach((item) => {
+      arr.push(item.raw);
+    });
+    dataList.value = arr;
+    console.log(arr);
+  }
+}
+
 
 const dialogVisible = ref(false)
 // 修改界面点击空白显示对话框
@@ -199,7 +295,7 @@ const personalData = ref([])
 
 // 获取当前登录者数据
 get('/api/account?id=' + takeAccId(), (data) => {
-  data.picName = getImageUrl(data.picName)
+  data.picName = getAccImageUrl(data.picName)
   personalData.value = data
   console.log(personalData.value)
 }, (err) => {

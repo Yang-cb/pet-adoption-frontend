@@ -24,13 +24,25 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="form.isFree" active-value="1" inactive-value="0"/>
       </el-form-item>
-      <el-form-item label="宠物照片" prop="pictureId">
-        <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
-        <el-upload v-model="form.pictureId" :auto-upload="false"
-                   :action="''" :show-file-list="true"
-                   :on-change="handleAvatarChangeIcon">
-          <el-button type="primary">选取文件</el-button>
-        </el-upload>
+      <el-form-item v-model="form.pictureId" label="宠物照片" prop="pictureId">
+        <div style="height: 160px; position: relative">
+          <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
+          <el-upload
+              :limit="1"
+              list-type="picture-card"
+              :auto-upload="false"
+              :action="''"
+              show-file-list
+              :on-exceed="handleExceed"
+              :on-change="handlePetChange"
+          >
+            <i class="el-icon-plus">+</i>
+          </el-upload>
+          <el-dialog :visible.sync="dialogVisible">
+            <img width="100%" :src="petPic" alt="">
+          </el-dialog>
+          <el-button @click="submitPetPic" style="position: absolute; right: -70px; bottom: 12px" type="primary">上传</el-button>
+        </div>
       </el-form-item>
       <el-form-item label="领养地区" prop="firstLocation">
         <el-cascader placeholder="请选择"
@@ -78,40 +90,57 @@ import {ElMessage} from 'element-plus'
 import {post} from '@/api/request.js'
 import {options, handleChange} from "@/utils";
 
-const img = ref('')
-console.log(img.value)
-
 // 表单选择地址
 const locStr = ref('')
 const locHandleChange = (locArr) => {
   locStr.value = handleChange(locArr);
 }
+const petPic = ref('')
 
+const dialogVisible = ref(false)
+// 超出limit时触发的方法
+const handleExceed = () => {
+  ElMessage.warning('只能上传一个文件')
+}
+
+const dataList = ref('')
+
+const submitPetPic = () => {
+  // formData格式
+  const formData = new FormData();
+  if (dataList.value.length === 0 || !dataList.value) {
+    ElMessage.error('请上传图片');
+    return false;
+  }
+  formData.append("type", "pet")
+  post('/api/file/upload', formData, (res) => {
+    ElMessage.success('上传成功');
+    // 返回值为图片对象
+    form.pictureId = res.id
+    console.log(res.id)
+  })
+}
 // 选中文件触发的change事件
-const handleAvatarChangeIcon = (file) => {
+const handlePetChange = (file, fileList) => {
   // 限制文件后缀名
   const isJPG = file.raw.type === 'image/jpeg'
   const isPNG = file.raw.type === 'image/png'
   // 限制上传文件的大小
-  const isLt5M = file.raw.size / 1024 / 1024 < 5
+  const isLt3M = file.raw.size / 1024 / 1024 < 3
   if (!isPNG && !isJPG) {
     ElMessage.error('图片只能是 JPG/PNG 格式')
     return false
-  } else if (!isLt5M) {
-    ElMessage.error('图片应在5MB以内')
+  } else if (!isLt3M) {
+    ElMessage.error('图片应在3MB以内')
     return false
   } else {
-    // 发起请求
-    let param = new FormData();
-    // form data格式
-    param.append("file", file.raw);
-    post('/api/file/upload', param, (res) => {
-      ElMessage.success('上传成功');
-      // 返回值为图片id
-      img.value = res
-      form.pictureId = res
-      console.log(form.pictureId)
-    })
+    let arr = [];
+    fileList.forEach((item) => {
+      arr.push(item.raw);
+    });
+    dataList.value = arr;
+    console.log(arr);
+    console.log(fileList)
   }
 }
 
@@ -142,29 +171,29 @@ const validateFileUrl = (rule, value, callback) => {
 
 const rules = {
   petType: [
-    {required: true, message: '请选择种类', trigger: 'change'}
+    {required: true, message: '请选择种类', trigger: 'handleChange'}
   ],
   sex: [
-    {required: true, message: '请选择性别', trigger: 'change',}
+    {required: true, message: '请选择性别', trigger: 'handleChange',}
   ],
   firstLocation: [
-    {required: true, message: '请选择地区', trigger: 'change',},
+    {required: true, message: '请选择地区', trigger: 'handleChange',},
   ],
   lastLocation: [
-    {required: true, message: '请输入详细地址', trigger: 'change',},
+    {required: true, message: '请输入详细地址', trigger: 'handleChange',},
   ],
   pictureId: [
-    {required: true, validator: validateFileUrl, trigger: 'change'},
+    {required: true, validator: validateFileUrl, trigger: 'handleChange'},
   ],
   contactsName: [
-    {required: true, message: '请输入联系人', trigger: 'change',},
+    {required: true, message: '请输入联系人', trigger: 'handleChange',},
   ],
   contactsPhone: [
-    {required: true, message: '请输入手机号', trigger: 'change',},
+    {required: true, message: '请输入手机号', trigger: 'handleChange',},
     {}
   ],
   contactsWechat: [
-    {message: '请输入合法的微信地址', trigger: 'change'}
+    {message: '请输入合法的微信地址', trigger: 'handleChange'}
   ],
   contactsEmail: [
     {type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur']}

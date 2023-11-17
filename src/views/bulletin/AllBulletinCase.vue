@@ -45,7 +45,7 @@ import {ref} from 'vue'
 import {Calendar, Location} from '@element-plus/icons-vue'
 import {ElMessage} from 'element-plus'
 import {get} from '@/api/request.js'
-import {getImageUrl} from '@/utils'
+import {getPetImageUrl} from '@/utils'
 import {useRouter} from 'vue-router'
 
 // 跳转页面并传递petId
@@ -64,7 +64,7 @@ const pBList = ref([])
 // 获取数据
 get('/api/pet/getAllPB', (data) => {
   for (let i = 0; i < data.length; i++) {
-    data[i].picName = getImageUrl(data[i].picName)
+    data[i].picName = getPetImageUrl(data[i].picName)
   }
   console.log(data)
   pBList.value = data
