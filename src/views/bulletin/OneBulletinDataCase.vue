@@ -66,7 +66,7 @@ const pBData = ref([])
 
 // 收藏
 const collectPB = () => {
-  post('/api/account/collectPB', {
+  post('/api/acc2pic/collectPB', {
     accId: takeAccId(),
     petId: route.query.petId
   }, () => {
@@ -77,7 +77,7 @@ const collectPB = () => {
 }
 // 取消收藏
 const cancelCollectPB = () => {
-  post('/api/account/cancelCollectPB', {
+  post('/api/acc2pic/cancelCollectPB', {
     accId: takeAccId(),
     petId: route.query.petId
   }, () => {

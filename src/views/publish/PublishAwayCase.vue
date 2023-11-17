@@ -112,6 +112,7 @@ const submitPetPic = () => {
     ElMessage.error('请上传图片');
     return false;
   }
+  formData.append("file", dataList.value[0])
   formData.append("type", "pet")
   post('/api/file/upload', formData, (res) => {
     ElMessage.success('上传成功');
