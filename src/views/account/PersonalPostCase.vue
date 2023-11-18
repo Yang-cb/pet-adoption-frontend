@@ -13,7 +13,7 @@
             <div style="margin-top: 20px">
               <el-button-group>
                 <el-button type="primary" :icon="Edit"/>
-                <el-button type="primary"  @click="deleteOnePost(postData.id)" :icon="Delete"/>
+                <el-button type="primary" @click="openDeleteOnePost(postData.petId)" :icon="Delete"/>
               </el-button-group>
             </div>
           </div>
@@ -40,7 +40,7 @@
 <script setup>
 import {ref} from 'vue'
 import {get, post, takeAccId} from '@/api/request.js'
-import {ElMessage} from "element-plus";
+import {ElMessage, ElMessageBox} from "element-plus";
 import {Delete, Edit} from "@element-plus/icons-vue";
 
 const getType = (petType) => {
@@ -52,15 +52,29 @@ const getType = (petType) => {
 
 const personalPostData = ref([])
 
-const deleteOnePost = (id) => {
-  post('/api/acc2pic/deletePostPB', {
-    bulletinId: id
-  }, (data) => {
-    ElMessage.success('删除成功')
-    location.reload()
-  }, (err) => {
-    ElMessage.error(err)
-  })
+// 删除一条宠物数据
+const openDeleteOnePost = (petId) => {
+  ElMessageBox.confirm(
+      '此操作不可逆，你确定要删除吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '手滑了',
+        type: 'warning',
+      }
+  )
+      .then(() => {
+        post('/api/acc2pic/deletePostPB', {
+          petId: petId
+        }, () => {
+          ElMessage.success('删除成功')
+          location.reload()
+        }, (err) => {
+          ElMessage.error(err)
+        })
+      })
+      .catch(() => {
+      })
 }
 
 

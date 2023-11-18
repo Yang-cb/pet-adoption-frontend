@@ -2,7 +2,7 @@
   <div style="margin-top: 10px;">
     <ul style="list-style: none; padding: 0;margin: 0; display: flex;">
       <li v-for="(pb) in pBList" style="width: 50% ;height: 140px; ">
-        <a @click="petData(pb.id)" style="display: flex;">
+        <a @click="petData(pb.petId)" style="display: flex;">
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
             <el-image fit='cover' style="width: 120px; height: 100% ; "

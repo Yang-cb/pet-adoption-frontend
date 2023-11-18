@@ -24,8 +24,9 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="form.isFree" active-value="1" inactive-value="0"/>
       </el-form-item>
-      <el-form-item v-model="form.pictureId" label="宠物照片" prop="pictureId">
+      <el-form-item label="宠物照片" prop="pictureId">
         <div style="height: 160px; position: relative">
+          <el-checkbox-group v-model="form.pictureId" v-show="false"></el-checkbox-group>
           <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
           <el-upload
               :limit="1"
@@ -41,7 +42,8 @@
           <el-dialog :visible.sync="dialogVisible">
             <img width="100%" :src="petPic" alt="">
           </el-dialog>
-          <el-button @click="submitPetPic" style="position: absolute; right: -70px; bottom: 12px" type="primary">上传</el-button>
+          <el-button @click="submitPetPic" style="position: absolute; right: -70px; bottom: 12px" type="primary">上传
+          </el-button>
         </div>
       </el-form-item>
       <el-form-item label="领养地区" prop="firstLocation">
@@ -87,7 +89,7 @@
 <script setup>
 import {reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import {post} from '@/api/request.js'
+import {post, takeAccId} from '@/api/request.js'
 import {options, handleChange} from "@/utils";
 
 // 表单选择地址
@@ -117,8 +119,9 @@ const submitPetPic = () => {
   post('/api/file/upload', formData, (res) => {
     ElMessage.success('上传成功');
     // 返回值为图片对象
-    form.pictureId = res.id
-    console.log(res.id)
+    form.pictureId = res.picId
+    petPic.value = res.picName
+    console.log(res.picId)
   })
 }
 // 选中文件触发的change事件
@@ -141,7 +144,7 @@ const handlePetChange = (file, fileList) => {
     });
     dataList.value = arr;
     console.log(arr);
-    console.log(fileList)
+    console.log(fileList);
   }
 }
 
@@ -172,29 +175,29 @@ const validateFileUrl = (rule, value, callback) => {
 
 const rules = {
   petType: [
-    {required: true, message: '请选择种类', trigger: 'handleChange'}
+    {required: true, message: '请选择种类', trigger: 'change'}
   ],
   sex: [
-    {required: true, message: '请选择性别', trigger: 'handleChange',}
+    {required: true, message: '请选择性别', trigger: 'change',}
   ],
   firstLocation: [
-    {required: true, message: '请选择地区', trigger: 'handleChange',},
+    {required: true, message: '请选择地区', trigger: 'change',},
   ],
   lastLocation: [
-    {required: true, message: '请输入详细地址', trigger: 'handleChange',},
+    {required: true, message: '请输入详细地址', trigger: 'change',},
   ],
   pictureId: [
-    {required: true, validator: validateFileUrl, trigger: 'handleChange'},
+    {required: true, message: '请上传图片', trigger: 'change'},
   ],
   contactsName: [
-    {required: true, message: '请输入联系人', trigger: 'handleChange',},
+    {required: true, message: '请输入联系人', trigger: 'change',},
   ],
   contactsPhone: [
-    {required: true, message: '请输入手机号', trigger: 'handleChange',},
+    {required: true, message: '请输入手机号', trigger: 'change',},
     {}
   ],
   contactsWechat: [
-    {message: '请输入合法的微信地址', trigger: 'handleChange'}
+    {message: '请输入合法的微信地址', trigger: 'change'}
   ],
   contactsEmail: [
     {type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur']}
@@ -214,6 +217,7 @@ const submitForm = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
       post('/api/pet/publishBulletin', {
+        accountId: takeAccId(),
         type: 'away', // 求抱走
         petName: form.petName,
         petType: form.petType,
