@@ -12,6 +12,7 @@ import PersonalData from "@/views/account/PersonalDataCase.vue";
 import PersonalCollect from "@/views/account/PersonalCollectCase.vue";
 import PersonalPost from "@/views/account/PersonalPostCase.vue";
 import OneBulletinData from "@/views/bulletin/OneBulletinDataCase.vue";
+import PersonalEditPost from "@/views/account/PersonalEditPostCase.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -77,6 +78,11 @@ const router = createRouter({
                             component: PersonalCollect
                         }
                     ]
+                },
+                {
+                    path: '/personalEditPost',
+                    name: '编辑发布过的宠物',
+                    component: PersonalEditPost
                 }
             ]
         }

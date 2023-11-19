@@ -60,26 +60,19 @@ const toPersonalData = () => {
                   <!-- 头像 -->
                   <div>
                     <el-button type='' link @click="toPersonalData">
-                      <el-avatar :size="60" :src="getAccImageUrl(personalData.picName)"/>
+                      <el-avatar :size="80" :src="getAccImageUrl(personalData.picName)"/>
                     </el-button>
                   </div>
-                  <!-- 昵称 -->
-                  <div style="margin-top: 8px; margin-bottom: 2px">
-                    <el-button type='' link @click="toPersonalData"
-                               style="font-size: 14px; font-weight: bold; margin-left: -4px ;">
-                      {{ personalData.nikeName }}
-                    </el-button>
-                  </div>
-                  <div style="font-size: 12px;  color: rgb(133, 133, 133);">
+                  <div style="margin-top: 5px; font-size: 12px;  color: rgb(133, 133, 133);">
                     @{{ personalData.username }}
                   </div>
                 </div>
                 <el-dropdown-menu>
                   <el-dropdown-item>
-                    <el-button type='' link @click="toPersonalData">个人资料</el-button>
+                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="toPersonalData">个人资料</el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>
-                    <el-button type='' link @click="userLogout">退出登录</el-button>
+                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="userLogout">退出登录</el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </div>

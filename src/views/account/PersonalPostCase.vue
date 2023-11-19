@@ -12,7 +12,7 @@
             </div>
             <div style="margin-top: 20px">
               <el-button-group>
-                <el-button type="primary" :icon="Edit"/>
+                <el-button type="primary" @click="openEditOnePost(postData.petId)" :icon="Edit"/>
                 <el-button type="primary" @click="openDeleteOnePost(postData.petId)" :icon="Delete"/>
               </el-button-group>
             </div>
@@ -42,6 +42,7 @@ import {ref} from 'vue'
 import {get, post, takeAccId} from '@/api/request.js'
 import {ElMessage, ElMessageBox} from "element-plus";
 import {Delete, Edit} from "@element-plus/icons-vue";
+import {useRouter} from 'vue-router'
 
 const getType = (petType) => {
   if (petType === 'other' || petType === '' || petType === null) {
@@ -51,6 +52,17 @@ const getType = (petType) => {
 }
 
 const personalPostData = ref([])
+
+const router = useRouter()
+
+const openEditOnePost = (petId) => {
+  router.push({
+    path: '/personalEditPost',
+    query: {
+      petId: petId
+    }
+  })
+}
 
 // 删除一条宠物数据
 const openDeleteOnePost = (petId) => {
@@ -68,7 +80,7 @@ const openDeleteOnePost = (petId) => {
           petId: petId
         }, () => {
           ElMessage.success('删除成功')
-          location.reload()
+          getPots()
         }, (err) => {
           ElMessage.error(err)
         })
@@ -77,13 +89,16 @@ const openDeleteOnePost = (petId) => {
       })
 }
 
-
-get('/api/acc2pic/getPostPB?id=' + takeAccId(), (data) => {
-  personalPostData.value = data
-  console.log(data)
-}, (err) => {
-  ElMessage.error(err)
-})
+// 获取用户发布的宠物数据
+const getPots = () => {
+  get('/api/acc2pic/getPostPB?id=' + takeAccId(), (data) => {
+    personalPostData.value = data
+    console.log(data)
+  }, (err) => {
+    ElMessage.error(err)
+  })
+}
+getPots()
 </script>
 
 <style>

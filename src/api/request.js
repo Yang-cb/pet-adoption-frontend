@@ -89,6 +89,15 @@ function initGet(url, headers, success, failure, error = defaultError) {
     }).catch(err => error(err))
 }
 
+function initPut(url, data, headers, success, failure, error = defaultError) {
+    axios.put(url, data, {headers: headers}).then(({data}) => {
+        if (data.code === 200)
+            success(data.data)
+        else
+            failure(data.message, data.code, url)
+    }).catch(err => error(err))
+}
+
 // 添加请求头
 const accessHeader = () => {
     return {
@@ -102,6 +111,10 @@ function get(url, success, failure = defaultFailure) {
 
 function post(url, data, success, failure = defaultFailure) {
     initPost(url, data, accessHeader(), success, failure)
+}
+
+function put(url, data, success, failure = defaultFailure) {
+    initPut(url, data, accessHeader(), success, failure)
 }
 
 // 登录
@@ -133,4 +146,4 @@ function unauthorized() {
     return !takeAccessToken()
 }
 
-export {post, get, login, logout, unauthorized, takeAccessToken, takeAccId}
+export {post, get, put, login, logout, unauthorized, takeAccessToken, takeAccId}

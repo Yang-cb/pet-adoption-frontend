@@ -16,7 +16,7 @@
         <!-- 昵称 编辑-->
         <div style="display: flex; justify-content: space-between; align-items: center; padding: 0 30px">
           <h1>{{ personalData.nikeName }}</h1>
-          <el-button :icon="Edit" @click="modifyDr = true">编辑个人资料</el-button>
+          <el-button :icon="Edit" @click="openEdit(personalData.accountId)">编辑个人资料</el-button>
         </div>
         <!-- 签名 -->
         <div style="padding-left: 28px; font-size: 15px">{{ personalData.signature }}</div>
@@ -202,6 +202,16 @@ import {takeAccId} from '@/api/request.js'
 import {strToDate, options, handleChange, getAccImageUrl} from '@/utils'
 import {Edit, Location} from "@element-plus/icons-vue";
 
+const openEdit = (accountId) => {
+  get('/api/account?id=' + accountId, (data) => {
+    form.value = data
+    console.log(form.value)
+  }, (err) => {
+    ElMessage.error(err)
+  })
+  modifyDr.value = true
+}
+
 // 修改头像对话框是否显示
 const setAccPic = ref(false)
 // 回显图片
@@ -294,14 +304,16 @@ const locHandleChange = (locArr) => {
 const personalData = ref([])
 
 // 获取当前登录者数据
-get('/api/account?id=' + takeAccId(), (data) => {
-  data.picName = getAccImageUrl(data.picName)
-  personalData.value = data
-  console.log(personalData.value)
-}, (err) => {
-  ElMessage.error(err)
-})
-
+const getAccount = () => {
+  get('/api/account?id=' + takeAccId(), (data) => {
+    data.picName = getAccImageUrl(data.picName)
+    personalData.value = data
+    console.log(personalData.value)
+  }, (err) => {
+    ElMessage.error(err)
+  })
+}
+getAccount()
 // 地区
 const getLocation = (locationStr) => {
   if (locationStr === null || '')
@@ -311,7 +323,8 @@ const getLocation = (locationStr) => {
 
 // 性别
 const getSex = (sexNum) => {
-  if (sexNum === null || '' || 2)
+  console.log("sexNum= " + sexNum)
+  if (sexNum === 2)
     return '未知'
   return sexNum === 1 ? '男' : '女'
 }
@@ -347,7 +360,7 @@ const dToM = () => {
   modifyDr.value = true
 }
 
-const form = reactive({
+const form = ref({
   nikeName: '', // 昵称
   signature: '', // 签名
   location: [], //地区
@@ -388,15 +401,15 @@ const submitForm = async () => {
           }, 2000)
           post('/api/account/updateAccountById', {
             id: takeAccId(),
-            nikeName: form.nikeName,
-            signature: form.signature === '' ? '什么都没有留下...' : form.signature,
+            nikeName: form.value.nikeName,
+            signature: form.value.signature === '' ? '什么都没有留下...' : form.value.signature,
             location: locStr.value === '' ? '未知' : locStr.value,
-            sex: form.sex,
-            birthday: form.birthday
+            sex: form.value.sex,
+            birthday: form.value.birthday
           }, () => {
             ElMessage.success('修改成功')
             modifyDr.value = false
-            location.reload();
+            getAccount()
           }, (msg) => {
             ElMessage.error(msg)
           })

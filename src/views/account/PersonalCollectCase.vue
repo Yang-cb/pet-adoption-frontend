@@ -1,7 +1,9 @@
 <template>
   <div>
     <el-space :fill="true" wrap style="width: 100%; align-content: center;">
-      <el-card v-for="collectData in personalCollectData" :key="personalCollectData" style="height: 300px; margin: 0 100px">
+      <span v-if="personalCollectData.length===0">暂无收藏</span>
+      <el-card v-for="collectData in personalCollectData" :key="personalCollectData"
+               style="height: 300px; margin: 0 100px">
         <template #header>
           <div style="display: flex; justify-content: space-between;">
             <div>
@@ -12,7 +14,11 @@
             </div>
             <div style="margin-top: 20px">
               <el-button-group>
-                <el-button type="primary" :icon="Delete"/>
+                <el-button @click="openUnCollect(collectData.petId)" type="text">
+                  <el-icon size="25">
+                    <StarFilled/>
+                  </el-icon>
+                </el-button>
               </el-button-group>
             </div>
           </div>
@@ -35,10 +41,11 @@
   </div>
 </template>
 <script setup>
-import {Delete, Edit} from "@element-plus/icons-vue";
-import {get, takeAccId} from "@/api/request";
-import {ElMessage} from "element-plus";
+import {StarFilled} from "@element-plus/icons-vue";
+import {get, post, takeAccId} from "@/api/request";
+import {ElMessage, ElMessageBox} from "element-plus";
 import {ref} from "vue";
+import router from "@/router";
 
 const getType = (petType) => {
   if (petType === 'other' || petType === '' || petType === null) {
@@ -50,10 +57,39 @@ const getType = (petType) => {
 const personalCollectData = ref([])
 
 
-get('/api/acc2pic/getCollectPB?id=' + takeAccId(), (data) => {
-  personalCollectData.value = data
-  console.log(data)
-}, (err) => {
-  ElMessage.error(err)
-})
+// 删除一条收藏记录
+const openUnCollect = (petId) => {
+  ElMessageBox.confirm(
+      '确定要取消收藏该宠物吗?',
+      'Warning',
+      {
+        confirmButtonText: '确定',
+        cancelButtonText: '手滑了',
+        type: 'warning',
+      })
+      .then(() => {
+            post('/api/acc2pic/cancelCollectPB', {
+              accId: takeAccId(),
+              petId: petId
+            }, () => {
+              ElMessage.success('取消收藏成功')
+              getCollections()
+            }, (err) => {
+              ElMessage.error(err)
+            })
+          }
+      )
+      .catch(() => {
+      })
+}
+
+const getCollections = () => {
+  get('/api/acc2pic/getCollectPB?id=' + takeAccId(), (data) => {
+    personalCollectData.value = data
+    console.log(data)
+  }, (err) => {
+    ElMessage.error(err)
+  })
+}
+getCollections()
 </script>
