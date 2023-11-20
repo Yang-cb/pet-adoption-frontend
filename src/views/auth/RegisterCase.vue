@@ -16,8 +16,8 @@ const form = reactive({
 const validateUsername = (rule, value, callback) => {
   if (value === '') {
     callback(new Error('请输入用户名'))
-  } else if (!/^[a-zA-Z0-9\u4e00-\u9fa5]+$/.test(value)) {
-    callback(new Error('用户名不能包含特殊字符，只能是中文/英文'))
+  } else if (!/^[a-zA-Z0-9_]{2,10}$/.test(value)) {
+    callback(new Error('用户名只能是字母（大小写）、数字和下划线'))
   } else {
     callback()
   }
@@ -36,11 +36,12 @@ const validatePassword = (rule, value, callback) => {
 const rules = {
   username: [
     {validator: validateUsername, trigger: ['blur', 'change']},
-    {min: 2, max: 8, message: '用户名的长度必须在2-8个字符之间', trigger: ['blur', 'change']},
+    {min: 2, max: 10, message: '用户名的长度必须在2-10个字符之间', trigger: ['blur', 'change']},
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 6, max: 16, message: '密码的长度必须在6-16个字符之间', trigger: ['blur', 'change']}
+    {min: 6, max: 16, message: '密码的长度必须在6-16个字符之间', trigger: ['blur', 'change']},
+    {pattern: "^[^\\s]{6,16}$", message: '不允许输入空格', trigger: 'blur'}
   ],
   password_repeat: [
     {validator: validatePassword, trigger: ['blur', 'change']},
@@ -109,7 +110,7 @@ const register = () => {
     <div style="margin-top: 30px">
       <el-form :model="form" :rules="rules" @validate="onValidate" ref="formRef">
         <el-form-item prop="username">
-          <el-input v-model="form.username" :maxlength="8" type="text" placeholder="用户名">
+          <el-input v-model="form.username" :maxlength="10" type="text" placeholder="用户名">
             <template #prefix>
               <el-icon>
                 <User/>

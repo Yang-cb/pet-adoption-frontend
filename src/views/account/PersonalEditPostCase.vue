@@ -14,15 +14,15 @@
           <el-radio-button label="other">其他</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="性别" prop="sex">
-        <el-radio-group v-model="editForm.sex">
+      <el-form-item label="性别" prop="petSex">
+        <el-radio-group v-model="editForm.petSex">
           <el-radio-button label="1">公</el-radio-button>
           <el-radio-button label="0">母</el-radio-button>
         </el-radio-group>
       </el-form-item>
       <el-form-item label="免费领养" prop="isFree" required>
         <!-- 状态为on时为1，状态为off时为0 -->
-        <el-switch v-model="editForm.isFree" active-value="1" inactive-value="0"/>
+        <el-switch v-model="editForm.isFree" :active-value="1" :inactive-value="0"/>
       </el-form-item>
       <el-form-item label="领养地区" prop="firstLocation">
         <el-cascader placeholder="请选择"
@@ -78,7 +78,7 @@ let route = useRoute();
 const editForm = ref({
   petName: '', // 宠物姓名
   petType: '', // 宠物种类
-  sex: '', // 宠物性别
+  petSex: '', // 宠物性别
   isFree: '', // 是否免费
   firstLocation: '', // 地址选择片段
   lastLocation: '', // 地址输入片段
@@ -102,7 +102,7 @@ const submitForm = async () => {
         petId: route.query.petId,
         petName: editForm.value.petName,
         petType: editForm.value.petType,
-        sex: editForm.value.sex,
+        petSex: editForm.value.petSex,
         isFree: editForm.value.isFree,
         location: locStr.value + editForm.value.lastLocation,
         contactsName: editForm.value.contactsName,
@@ -142,7 +142,7 @@ const rules = {
   petType: [
     {required: true, message: '请选择种类', trigger: 'change'}
   ],
-  sex: [
+  petSex: [
     {required: true, message: '请选择性别', trigger: 'change',}
   ],
   firstLocation: [

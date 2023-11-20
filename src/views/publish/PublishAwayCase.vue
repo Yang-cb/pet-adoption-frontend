@@ -14,8 +14,8 @@
           <el-radio-button label="other">其他</el-radio-button>
         </el-radio-group>
       </el-form-item>
-      <el-form-item label="性别" prop="sex">
-        <el-radio-group v-model="form.sex">
+      <el-form-item label="性别" prop="petSex">
+        <el-radio-group v-model="form.petSex">
           <el-radio-button label="1">公</el-radio-button>
           <el-radio-button label="0">母</el-radio-button>
         </el-radio-group>
@@ -26,7 +26,7 @@
       </el-form-item>
       <el-form-item label="宠物照片" prop="pictureId">
         <div style="height: 160px; position: relative">
-          <el-checkbox-group v-model="form.pictureId" v-show="false"></el-checkbox-group>
+          <el-checkbox-group v-model="form.picName" v-show="false"></el-checkbox-group>
           <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
           <el-upload
               :limit="1"
@@ -107,6 +107,8 @@ const handleExceed = () => {
 
 const dataList = ref('')
 
+const picId = ref('');
+
 const submitPetPic = () => {
   // formData格式
   const formData = new FormData();
@@ -119,7 +121,8 @@ const submitPetPic = () => {
   post('/api/file/upload', formData, (res) => {
     ElMessage.success('上传成功');
     // 返回值为图片对象
-    form.pictureId = res.picId
+    picId.value = res.picId
+    form.picName = res.picName
     petPic.value = res.picName
     console.log(res.picId)
   })
@@ -151,11 +154,11 @@ const handlePetChange = (file, fileList) => {
 const form = reactive({
   petName: '', // 宠物姓名
   petType: 'cat', // 宠物种类
-  sex: '1', // 宠物性别
+  petSex: '1', // 宠物性别
   isFree: '1', // 是否免费
   firstLocation: '', // 地址选择片段
   lastLocation: '', // 地址输入片段
-  pictureId: '', // 图片id
+  picName: '', // 图片名
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
   contactsWechat: '', // 微信
@@ -164,46 +167,46 @@ const form = reactive({
   text: '' // 详细描述
 })
 
-// 文件上传数量规则
-const validateFileUrl = (rule, value, callback) => {
-  if (value.length < 1) {
-    callback(new Error("请上传宠物图片"))
-  } else {
-    callback()
-  }
-}
 
 const rules = {
   petType: [
-    {required: true, message: '请选择种类', trigger: 'change'}
+    {required: true, message: '请选择宠物种类', trigger: 'change'},
+    {pattern: /^(cat|dog|other)$/, message: '宠物类型格式有误', trigger: 'blur'}
   ],
-  sex: [
-    {required: true, message: '请选择性别', trigger: 'change',}
+  petSex: [
+    {required: true, message: '请选择性别', trigger: 'change'},
+    {pattern: /^[0-1]$/, message: '性别格式有误', trigger: 'blur'}
+  ],
+  isFree: [
+    {required: true, message: '请选择是否免费', trigger: 'change'},
+    {pattern: /^[0-1]$/, message: '是否免费格式有误', trigger: 'blur'}
   ],
   firstLocation: [
-    {required: true, message: '请选择地区', trigger: 'change',},
+    {required: true, message: '请选择地区', trigger: 'change'}
   ],
   lastLocation: [
-    {required: true, message: '请输入详细地址', trigger: 'change',},
+    {required: true, message: '请输入详细地址', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
-  pictureId: [
+  picName: [
     {required: true, message: '请上传图片', trigger: 'change'},
   ],
   contactsName: [
-    {required: true, message: '请输入联系人', trigger: 'change',},
+    {required: true, message: '请输入联系人', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
   contactsPhone: [
     {required: true, message: '请输入手机号', trigger: 'change',},
-    {}
+    {pattern: '^1[3456789]\\d{9}$', message: '请输入合法的手机号', trigger: 'blur'}
   ],
   contactsWechat: [
-    {message: '请输入合法的微信地址', trigger: 'change'}
+    {pattern: "^[a-zA-Z][a-zA-Z0-9_-]{5,19}$", message: '请输入合法的微信号', trigger: 'blur'}
   ],
   contactsEmail: [
-    {type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur']}
+    {type: 'email', message: '请输入合法的电子邮件地址', trigger: 'blur'}
   ],
   title: [
-    {required: true, message: '请输入标题', trigger: 'blur',},
+    {required: true, message: '请输入标题', trigger: 'blur'},
   ],
   text: [
     {required: true, message: '请详细描述宠物信息', trigger: 'blur',},
@@ -221,10 +224,10 @@ const submitForm = async () => {
         type: 'away', // 求抱走
         petName: form.petName,
         petType: form.petType,
-        sex: form.sex,
+        petSex: form.petSex,
         isFree: form.isFree,
         location: locStr.value + form.lastLocation,
-        pictureId: form.pictureId,
+        pictureId: picId.value,
         contactsName: form.contactsName,
         contactsPhone: form.contactsPhone,
         contactsWechat: form.contactsWechat,

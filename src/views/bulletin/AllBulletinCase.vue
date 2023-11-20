@@ -1,7 +1,7 @@
 <template>
   <div style="margin-top: 10px;">
-    <ul style="list-style: none; padding: 0;margin: 0; display: flex;">
-      <li v-for="(pb) in pBList" style="width: 50% ;height: 140px; ">
+    <ul style="list-style: none; padding: 0;margin: 0; ">
+      <li v-for="(pb) in pBList" style="width: 100% ;height: 140px; ">
         <a @click="petData(pb.petId)" style="display: flex;">
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
@@ -11,27 +11,33 @@
           <!-- 标题 -->
           <div style="flex: 1;">
             <h4>{{ pb.title }}</h4>
-            <!-- 发布时间 -->
-            <el-text>
-              <el-icon>
-                <Calendar/>
-              </el-icon>
-              {{ pb.gmtModified }}
-            </el-text>
-            <div style="width: 200px;">
-              <!-- 领养地址 -->
-              <el-text truncated>
+            <div>
+              <el-tag>{{ getType(pb.getType) }}</el-tag>
+              <el-tag v-if="pb.isFree===1">免费</el-tag>
+              <el-tag v-else type="danger">付费</el-tag>
+              <!-- 发布时间 -->
+
+              <el-text>
                 <el-icon>
-                  <Location/>
+                  <Calendar/>
                 </el-icon>
-                {{ pb.location }}
+                {{ pb.gmtCreate }}
               </el-text>
-            </div>
-            <div style="width: 300px;">
-              <!-- 详细介绍 -->
-              <el-text truncated>
-                {{ pb.text }}
-              </el-text>
+              <div style="width: 200px;">
+                <!-- 领养地址 -->
+                <el-text truncated>
+                  <el-icon>
+                    <Location/>
+                  </el-icon>
+                  {{ pb.location }}
+                </el-text>
+              </div>
+              <div style="width: 300px;">
+                <!-- 详细介绍 -->
+                <el-text truncated>
+                  {{ pb.text }}
+                </el-text>
+              </div>
             </div>
           </div>
         </a>
@@ -47,6 +53,13 @@ import {ElMessage} from 'element-plus'
 import {get} from '@/api/request.js'
 import {getPetImageUrl} from '@/utils'
 import {useRouter} from 'vue-router'
+
+const getType = (petType) => {
+  if (petType === 'other' || petType === '' || petType === null) {
+    return '其他'
+  }
+  return petType === 'dog' ? '狗狗' : '猫猫'
+}
 
 // 跳转页面并传递petId
 const router = useRouter();

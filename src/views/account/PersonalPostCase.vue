@@ -8,7 +8,7 @@
               <p style="font-size: 18px; font-weight: bold">{{ postData.title }}</p>
               <p style="font-size: 14px; font-weight: bold">{{
                   getType(postData.petType)
-                }}({{ postData.sex === 1 ? '公' : '母' }})</p>
+                }}({{ postData.petSex === 1 ? '公' : '母' }})</p>
             </div>
             <div style="margin-top: 20px">
               <el-button-group>
@@ -77,7 +77,8 @@ const openDeleteOnePost = (petId) => {
   )
       .then(() => {
         post('/api/acc2pic/deletePostPB', {
-          petId: petId
+          petId: petId,
+          accId: takeAccId()
         }, () => {
           ElMessage.success('删除成功')
           getPots()

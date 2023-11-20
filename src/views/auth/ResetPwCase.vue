@@ -33,7 +33,8 @@ const rules = {
   ],
   password: [
     {required: true, message: '请输入密码', trigger: 'blur'},
-    {min: 6, max: 16, message: '密码的长度必须在6-16个字符之间', trigger: ['blur']}
+    {min: 6, max: 16, message: '密码的长度必须在6-16个字符之间', trigger: ['blur']},
+    {pattern: "^[^\\s]{6,16}$", message: '不允许输入空格', trigger: 'blur'}
   ],
   password_repeat: [
     {validator: validatePassword, trigger: ['blur', 'change']},

@@ -88,35 +88,40 @@ const form = reactive({
 
 const rules = {
   petType: [
-    {required: true, message: '请选择种类', trigger: 'change',},
+    {required: true, message: '请选择宠物种类', trigger: 'change'},
+    {pattern: /^(cat|dog|other)$/, message: '宠物类型格式有误', trigger: 'blur'}
   ],
   sex: [
-    {required: true, message: '请选择性别', trigger: 'change',},
+    {required: true, message: '请选择性别', trigger: 'change'},
+    {pattern: /^[0-1]$/, message: '性别格式有误', trigger: 'blur'}
   ],
   firstLocation: [
-    {required: true, message: '请选择地区', trigger: 'change',},
+    {required: true, message: '请选择地区', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
   lastLocation: [
-    {required: true, message: '请输入详细地址', trigger: 'change',},
+    {required: true, message: '请输入详细地址', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
   contactsName: [
-    {required: true, message: '请输入联系人', trigger: 'change'}
+    {required: true, message: '请输入联系人', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
   contactsPhone: [
     {required: true, message: '请输入手机号', trigger: 'change',},
-    {}
+    {pattern: '^1[3456789]\\d{9}$', message: '请输入合法的手机号', trigger: 'blur'}
   ],
   contactsWechat: [
-    {message: '请输入合法的微信地址', trigger: 'change',},
+    {pattern: "^[a-zA-Z][a-zA-Z0-9_-]{5,19}$", message: '请输入合法的微信号', trigger: 'blur'}
   ],
   contactsEmail: [
-    {type: 'email', message: '请输入合法的电子邮件地址', trigger: ['blur']}
+    {type: 'email', message: '请输入合法的电子邮件地址', trigger: 'blur'}
   ],
   title: [
-    {required: true, message: '请输入领养标题', trigger: 'blur'}
+    {required: true, message: '请输入标题', trigger: 'blur'}
   ],
   text: [
-    {required: true, message: '请详细描述您的信息', trigger: 'blur'},
+    {required: true, message: '请详细描述宠物信息', trigger: 'blur'}
   ],
 }
 

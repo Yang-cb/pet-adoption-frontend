@@ -373,13 +373,19 @@ const modifyRef = ref()
 const rules = {
   nikeName: [
     {required: true, message: '请输入昵称', trigger: 'change'},
-    {min: 2, max: 8, message: '昵称应在2-8个字符之间', trigger: 'blur'}
+    {min: 2, max: 8, message: '昵称应在2-8个字符之间', trigger: 'blur'},
+    {
+      pattern: /^[\u4e00-\u9fa5_a-zA-Z0-9]{2,8}$/,
+      message: '昵称只能是由2-8位中文、英文、数字或下划线组成',
+      trigger: 'blur'
+    }
   ],
   signature: [
     {max: 20, message: '签名应在20个字符以内', trigger: 'blur'}
   ],
   sex: [
-    {required: true, message: '请选择性别', trigger: 'change'}
+    {required: true, message: '请选择性别', trigger: 'change'},
+    {pattern: /^[0-2]$/, message: '请选择正确的性别', trigger: 'change'}
   ],
   birthdate: [
     {type: 'date', message: '请输入正确的出生日期', trigger: 'change'}

@@ -66,6 +66,7 @@ const router = createRouter({
                     path: '/personalData',
                     name: '个人页',
                     component: PersonalData,
+                    redirect: '/personalData/post',
                     children: [
                         {
                             path: 'post',
