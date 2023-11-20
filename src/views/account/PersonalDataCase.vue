@@ -195,7 +195,7 @@
 </template>
 
 <script setup>
-import {reactive, ref} from 'vue'
+import {ref} from 'vue'
 import {get, post} from '@/api/request.js'
 import {ElMessage, ElDrawer} from "element-plus";
 import {takeAccId} from '@/api/request.js'

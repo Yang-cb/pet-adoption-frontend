@@ -33,13 +33,20 @@
             <p>电子邮件：{{ pBData.contactsEmail }}</p>
           </div>
 
+          <!-- 根据用户是否已经收藏该宠物，决定展示哪个图标 -->
           <div>
-            <div>
-              <el-button @click="collectPB">点击收藏</el-button>
-            </div>
-            <div>
-              <el-button @click="cancelCollectPB">取消收藏</el-button>
-            </div>
+            <!-- 收藏 -->
+            <el-button v-show="!isCollect" type="text" @click="collectPB">
+              <el-icon :size="25">
+                <Star/>
+              </el-icon>
+            </el-button>
+            <!-- 取消收藏 -->
+            <el-button v-show="isCollect" type="text" style="margin: 0" @click="cancelCollectPB">
+              <el-icon :size="30">
+                <StarFilled/>
+              </el-icon>
+            </el-button>
           </div>
           <el-button>我想领养它</el-button>
         </el-col>
@@ -57,7 +64,7 @@
 import {get, post, takeAccId} from '@/api/request.js'
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
-import {Picture as IconPicture} from '@element-plus/icons-vue'
+import {Picture as IconPicture, Star, StarFilled} from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {getPetImageUrl} from "@/utils";
 
@@ -94,15 +101,6 @@ const getType = (petType) => {
   return petType === 'dog' ? '狗狗' : '猫猫'
 }
 
-const collectAccIds = []
-
-// TODO 该用户是否已收藏该宠物
-const isCollect = (collectAccIds) => {
-  console.log('collectAccIds=' + collectAccIds)
-  let id = takeAccId();
-  return collectAccIds.indexOf(id)
-}
-
 // 获取跳转页面传来的数据
 const route = useRoute();
 get('/api/pet/getPBByPetId?petId=' + route.query.petId, (data) => {
@@ -112,6 +110,17 @@ get('/api/pet/getPBByPetId?petId=' + route.query.petId, (data) => {
 }, (err) => {
   ElMessage.error(err)
 })
+
+// 该用户是否已收藏该宠物
+const isCollect = ref(false)
+const getIsCollect = () => {
+  get('/api/acc2pic/isCollect?accId=' + takeAccId() + '&petId=' + route.query.petId, (data) => {
+    isCollect.value = data
+  }, (err) => {
+    console.log(err)
+  })
+}
+getIsCollect()
 </script>
 
 <style>
