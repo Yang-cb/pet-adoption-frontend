@@ -24,26 +24,20 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="form.isFree" active-value="1" inactive-value="0"/>
       </el-form-item>
-      <el-form-item label="宠物照片" prop="pictureId">
+      <el-form-item label="宠物照片" prop="dataList">
         <div style="height: 160px; position: relative">
-          <el-checkbox-group v-model="form.picName" v-show="false"></el-checkbox-group>
           <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
           <el-upload
               :limit="1"
               list-type="picture-card"
               :auto-upload="false"
-              :action="''"
+              action="#"
               show-file-list
               :on-exceed="handleExceed"
               :on-change="handlePetChange"
           >
-            <i class="el-icon-plus">+</i>
+            <span style="font-size: 30px;">+</span>
           </el-upload>
-          <el-dialog :visible.sync="dialogVisible">
-            <img width="100%" :src="petPic" alt="">
-          </el-dialog>
-          <el-button @click="submitPetPic" style="position: absolute; right: -70px; bottom: 12px" type="primary">上传
-          </el-button>
         </div>
       </el-form-item>
       <el-form-item label="领养地区" prop="firstLocation">
@@ -97,36 +91,14 @@ const locStr = ref('')
 const locHandleChange = (locArr) => {
   locStr.value = handleChange(locArr);
 }
-const petPic = ref('')
 
-const dialogVisible = ref(false)
 // 超出limit时触发的方法
 const handleExceed = () => {
   ElMessage.warning('只能上传一个文件')
 }
 
+// 暂存上传的文件
 const dataList = ref('')
-
-const picId = ref('');
-
-const submitPetPic = () => {
-  // formData格式
-  const formData = new FormData();
-  if (dataList.value.length === 0 || !dataList.value) {
-    ElMessage.error('请上传图片');
-    return false;
-  }
-  formData.append("file", dataList.value[0])
-  formData.append("type", "pet")
-  post('/api/file/upload', formData, (res) => {
-    ElMessage.success('上传成功');
-    // 返回值为图片对象
-    picId.value = res.picId
-    form.picName = res.picName
-    petPic.value = res.picName
-    console.log(res.picId)
-  })
-}
 // 选中文件触发的change事件
 const handlePetChange = (file, fileList) => {
   // 限制文件后缀名
@@ -146,8 +118,6 @@ const handlePetChange = (file, fileList) => {
       arr.push(item.raw);
     });
     dataList.value = arr;
-    console.log(arr);
-    console.log(fileList);
   }
 }
 
@@ -167,8 +137,19 @@ const form = reactive({
   text: '' // 详细描述
 })
 
+// 自定义验证图片是否上传
+const validatePic = (rule, value, callback) => {
+  if (dataList.value.length === 0) {
+    callback(new Error('请上传宠物图片'))
+  } else {
+    callback()
+  }
+}
 
 const rules = {
+  dataList: [
+    {required: true, validator: validatePic, trigger: 'change'}
+  ],
   petType: [
     {required: true, message: '请选择宠物种类', trigger: 'change'},
     {pattern: /^(cat|dog|other)$/, message: '宠物类型格式有误', trigger: 'blur'}
@@ -187,9 +168,6 @@ const rules = {
   lastLocation: [
     {required: true, message: '请输入详细地址', trigger: 'change'},
     {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
-  ],
-  picName: [
-    {required: true, message: '请上传图片', trigger: 'change'},
   ],
   contactsName: [
     {required: true, message: '请输入联系人', trigger: 'change'},
@@ -216,34 +194,38 @@ const rules = {
 const formRef = ref()
 
 // 提交表单
-const submitForm = async () => {
-  await formRef.value.validate((valid) => {
+const submitForm = () => {
+  formRef.value.validate((valid) => {
     if (valid) {
-      post('/api/pet/publishBulletin', {
-        accountId: takeAccId(),
-        type: 'away', // 求抱走
-        petName: form.petName,
-        petType: form.petType,
-        petSex: form.petSex,
-        isFree: form.isFree,
-        location: locStr.value + form.lastLocation,
-        pictureId: picId.value,
-        contactsName: form.contactsName,
-        contactsPhone: form.contactsPhone,
-        contactsWechat: form.contactsWechat,
-        contactsEmail: form.contactsEmail,
-        title: form.title,
-        text: form.text
-      }, () => {
+      // formData格式
+      const formData = new FormData();
+      if (dataList.value.length === 0 || !dataList.value) {
+        ElMessage.error('请上传图片');
+        return false;
+      }
+      formData.append("file", dataList.value[0])
+      formData.append("picType", "pet")
+      formData.append("accountId", takeAccId())
+      formData.append("type", 'away')
+      formData.append("petName", form.petName)
+      formData.append("petType", form.petType)
+      formData.append("petSex", form.petSex)
+      formData.append("isFree", form.isFree)
+      formData.append("location", locStr.value + form.lastLocation)
+      formData.append("contactsName", form.contactsName)
+      formData.append("contactsPhone", form.contactsPhone)
+      formData.append("contactsWechat", form.contactsWechat)
+      formData.append("contactsEmail", form.contactsEmail)
+      formData.append("title", form.title)
+      formData.append("text", form.text)
+      post('/api/pet/publishBulletin', formData, () => {
         ElMessage.success('发布成功')
-        resetForm()
+      }, () => {
+        ElMessage.error('发布失败')
       })
-    } else {
-      ElMessage.warning('请完整填写表单内容')
     }
   })
 }
-
 // 重置表单数据
 const resetForm = () => {
   formRef.value.resetFields();
