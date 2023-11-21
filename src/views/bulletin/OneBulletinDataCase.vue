@@ -23,32 +23,49 @@
         <el-col :span="12">
           <!-- 资料 -->
           <div>
-            <p>{{ pBData.isFree === 1 ? '免费领养' : '收费' }}</p>
-            <p>发布时间：{{ pBData.gmtModified }}</p>
-            <p>宠物种类：{{ getType(pBData.petType) }}({{ pBData.petSex === 1 ? '公' : '母' }})</p>
-            <p>领养地点：{{ pBData.location }}</p>
-            <p>联系人：{{ pBData.contactsName }}</p>
-            <p>联系电话：{{ pBData.contactsPhone }}</p>
-            <p>微信号：{{ pBData.contactsWechat }}</p>
-            <p>电子邮件：{{ pBData.contactsEmail }}</p>
+            <el-tag v-if="pBData.isFree===1" style="font-size: 14px">免费</el-tag>
+            <el-tag v-else type="danger" style="font-size: 14px">付费</el-tag>
+            <span v-if="pBData.isFree===1" style="color: brown">【免费领养不要相信任何费用先付的骗术】</span>
+            <p class="text"><span class="icon"><el-icon><Calendar/></el-icon></span>
+              发布时间：{{ pBData.gmtModified }}
+            </p>
+            <p class="text"><span class="icon"><el-icon><Postcard/></el-icon></span>
+              宠物种类：{{ getType(pBData.petType) }}({{ pBData.petSex === 1 ? '公' : '母' }})
+            </p>
+            <p class="text"><span class="icon"><el-icon><Location/></el-icon></span>
+              领养地点：{{ pBData.location }}
+            </p>
+            <p class="text"><span class="icon"><el-icon><User/></el-icon></span>
+              联系人：{{ pBData.contactsName }}
+            </p>
+            <p class="text"><span class="icon"><el-icon><Phone/></el-icon></span>
+              联系电话：{{ pBData.contactsPhone }}
+            </p>
+            <p class="text"><span class="icon"><el-icon><ChatDotRound/></el-icon></span>
+              微信号：{{ getWechat(pBData.contactsWechat) }}
+            </p>
+            <p class="text"><span class="icon"><el-icon><Message/></el-icon></span>
+              电子邮件：{{ getEmail(pBData.contactsEmail) }}
+            </p>
           </div>
 
+          <!-- 收藏 -->
           <!-- 根据用户是否已经收藏该宠物，决定展示哪个图标 -->
           <div>
+            <span class="icon"><el-icon><Star/></el-icon></span>
             <!-- 收藏 -->
-            <el-button v-show="!isCollect" type="text" @click="collectPB">
-              <el-icon :size="25">
-                <Star/>
-              </el-icon>
+            <el-button v-show="!isCollect" type="text" @click="collectPB" class="bu_text">
+              {{ !collect ? '点击收藏' : '取消收藏' }}
             </el-button>
             <!-- 取消收藏 -->
-            <el-button v-show="isCollect" type="text" style="margin: 0" @click="cancelCollectPB">
-              <el-icon :size="30">
-                <StarFilled/>
-              </el-icon>
+            <el-button v-show="isCollect" type="text" style="margin-left: 3px;" @click="collectPB" class="bu_text">
+              {{ collect ? '点击收藏' : '取消收藏' }}
             </el-button>
           </div>
-          <el-button>我想领养它</el-button>
+          <div>
+            <span class="icon"><el-icon><Plus/></el-icon></span>
+            <el-button type="text" class="bu_text">我想领养它</el-button>
+          </div>
         </el-col>
       </el-row>
       <!-- 详细介绍 -->
@@ -64,41 +81,33 @@
 import {get, post, takeAccId} from '@/api/request.js'
 import {ElMessage} from "element-plus";
 import {useRoute} from "vue-router";
-import {Picture as IconPicture, Star, StarFilled} from '@element-plus/icons-vue'
+import {
+  Calendar,
+  ChatDotRound,
+  Location, Message, Phone,
+  Picture as IconPicture, Plus,
+  Postcard,
+  Star,
+  User
+} from '@element-plus/icons-vue'
 import {ref} from "vue";
 import {getPetImageUrl} from "@/utils";
 
 const pBData = ref([])
 
+const collect = ref(false)
 
-// 收藏
+// 收藏/取消收藏
 const collectPB = () => {
   post('/api/acc2pic/collectPB', {
     accId: takeAccId(),
     petId: route.query.petId
-  }, () => {
-    ElMessage.success('收藏成功')
+  }, (msg) => {
+    ElMessage.success(msg)
+    collect.value = !collect.value
   }, (err) => {
     ElMessage.error(err)
   })
-}
-// 取消收藏
-const cancelCollectPB = () => {
-  post('/api/acc2pic/cancelCollectPB', {
-    accId: takeAccId(),
-    petId: route.query.petId
-  }, () => {
-    ElMessage.success('取消收藏成功')
-  }, (err) => {
-    ElMessage.error(err)
-  })
-}
-// 种类
-const getType = (petType) => {
-  if (petType === 'other' || petType === '' || petType === null) {
-    return '其他'
-  }
-  return petType === 'dog' ? '狗狗' : '猫猫'
 }
 
 // 获取跳转页面传来的数据
@@ -121,6 +130,28 @@ const getIsCollect = () => {
   })
 }
 getIsCollect()
+
+// 种类
+const getType = (petType) => {
+  if (petType === 'other' || petType === '' || petType === null) {
+    return '其他'
+  }
+  return petType === 'dog' ? '狗狗' : '猫猫'
+}
+
+// 微信
+const getWechat = (wechat) => {
+  if (wechat === null || wechat === '')
+    return '未知'
+  return wechat
+}
+
+// 邮箱
+const getEmail = (email) => {
+  if (email === null || email === '')
+    return '未知'
+  return email
+}
 </script>
 
 <style>
@@ -136,5 +167,22 @@ getIsCollect()
   font-size: 15px;
   margin-top: 50px;
   box-shadow: var(--el-box-shadow-light);
+}
+
+.icon {
+  margin-right: 10px;
+  vertical-align: middle;
+}
+
+.text {
+  margin: 10px 0;
+  font-size: 16px;
+}
+
+.bu_text {
+  color: black;
+  font-size: 16px;
+  margin-left: 3px;
+  margin-bottom: 3px;
 }
 </style>

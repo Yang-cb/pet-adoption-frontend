@@ -314,6 +314,7 @@ const getAccount = () => {
   })
 }
 getAccount()
+
 // 地区
 const getLocation = (locationStr) => {
   if (locationStr === null || '')
@@ -323,7 +324,6 @@ const getLocation = (locationStr) => {
 
 // 性别
 const getSex = (sexNum) => {
-  console.log("sexNum= " + sexNum)
   if (sexNum === 2)
     return '未知'
   return sexNum === 1 ? '男' : '女'
