@@ -95,19 +95,21 @@ const router = createRouter({
                         path: 'post',
                         name: 'mainPersonalPost',
                         component: PersonalPost,
-                        children: [{
-                            path: 'personalEditPost',
-                            name: 'mainPersonalEditPost',
-                            component: PersonalEditPost
-                        }]
+                        children: []
                     }, {
                         path: 'collect',
                         name: 'mainPersonalCollect',
                         component: PersonalCollect
                     }
                 ]
-            }
-            ]
+            }, {
+                path: 'personalEditPost',
+                name: 'mainPersonalEditPost',
+                component: PersonalEditPost,
+                meta: {
+                    title: '修改宠物信息'
+                },
+            }]
         }
     ]
 })

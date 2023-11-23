@@ -85,7 +85,7 @@
              class="demo-ruleForm"
              status-icon>
       <div style="position: relative">
-        <el-form-item label="我的详细地址" prop="lastLocation" >
+        <el-form-item label="我的详细地址" prop="lastLocation">
           <el-input v-model="wantAdoptForm.lastLocation" placeholder="请输入详细地址，右侧可快速选择"/>
         </el-form-item>
         <el-cascader placeholder="请选择"
@@ -112,6 +112,7 @@
                   placeholder="请详细描述领养条件及家中宠物信息, 内容不得超过300字"/>
       </el-form-item>
       <el-form-item>
+        <el-button @click="wantAdoptFormVisible = false">取消</el-button>
         <el-button @click="resetForm()">重置</el-button>
         <el-button type="primary" @click="submitForm()">
           提交
@@ -136,10 +137,8 @@ import {
 } from '@element-plus/icons-vue'
 import {reactive, ref} from "vue";
 import {getPetImageUrl, options, handleChange} from "@/utils";
-import router from "@/router";
 
-// 表单选择地址
-const locStr = ref('')
+// 表单选择地址并赋值给表单
 const locHandleChange = (locArr) => {
   wantAdoptForm.lastLocation = handleChange(locArr);
 }
@@ -158,7 +157,7 @@ const wantAdoptForm = reactive({
 
 const formRef = ref()
 
-// 提交表单
+// 提交我想领养表单
 const submitForm = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
@@ -174,6 +173,7 @@ const submitForm = async () => {
       }, () => {
         ElMessage.success('发布成功')
         resetForm()
+        wantAdoptFormVisible.value = false
       })
     } else {
       ElMessage.warning('请完整填写表单内容')

@@ -24,17 +24,17 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="editForm.isFree" :active-value="1" :inactive-value="0"/>
       </el-form-item>
-      <el-form-item label="领养地区" prop="firstLocation">
+      <div style="position: relative">
+        <el-form-item label="我的详细地址" prop="location">
+          <el-input v-model="editForm.location" placeholder="请输入详细地址，右侧可快速选择"/>
+        </el-form-item>
         <el-cascader placeholder="请选择"
-                     style="width: 100%"
+                     style="width: 0; position: absolute; top: 0; right: 44px;"
                      :options="options"
-                     v-model="editForm.firstLocation"
-                     @change="locHandleChange(editForm.firstLocation)">
+                     v-model="editForm.locationArr"
+                     @change="locHandleChange(editForm.locationArr)">
         </el-cascader>
-      </el-form-item>
-      <el-form-item label="详细地址" prop="lastLocation">
-        <el-input v-model="editForm.lastLocation" placeholder="请输入"/>
-      </el-form-item>
+      </div>
       <el-form-item label="联系人" prop="contactsName">
         <el-input minlength="1" maxlength="5" v-model="editForm.contactsName"/>
       </el-form-item>
@@ -80,8 +80,8 @@ const editForm = ref({
   petType: '', // 宠物种类
   petSex: '', // 宠物性别
   isFree: '', // 是否免费
-  firstLocation: '', // 地址选择片段
-  lastLocation: '', // 地址输入片段
+  locationArr: '', // 地址选择片段
+  location: '', // 地址输入片段
   pictureId: '', // 图片id
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
@@ -90,7 +90,6 @@ const editForm = ref({
   title: '', // 标题
   text: '' // 详细描述
 })
-
 
 const formRef = ref()
 
@@ -104,7 +103,7 @@ const submitForm = async () => {
         petType: editForm.value.petType,
         petSex: editForm.value.petSex,
         isFree: editForm.value.isFree,
-        location: locStr.value + editForm.value.lastLocation,
+        location: editForm.value.location,
         contactsName: editForm.value.contactsName,
         contactsPhone: editForm.value.contactsPhone,
         contactsWechat: editForm.value.contactsWechat,
@@ -132,10 +131,9 @@ get('/api/pet/getPBByPetId?petId=' + route.query.petId, (data) => {
   console.log(data)
 })
 
-// 表单选择地址
-const locStr = ref('')
+// 表单选择地址赋值给表单
 const locHandleChange = (locArr) => {
-  locStr.value = handleChange(locArr);
+  editForm.value.location = handleChange(locArr);
 }
 
 const rules = {
@@ -145,10 +143,7 @@ const rules = {
   petSex: [
     {required: true, message: '请选择性别', trigger: 'change',}
   ],
-  firstLocation: [
-    {required: true, message: '请选择地区', trigger: 'change',},
-  ],
-  lastLocation: [
+  location: [
     {required: true, message: '请输入详细地址', trigger: 'change',},
   ],
   contactsName: [

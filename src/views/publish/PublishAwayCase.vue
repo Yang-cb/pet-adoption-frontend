@@ -40,17 +40,17 @@
           </el-upload>
         </div>
       </el-form-item>
-      <el-form-item label="领养地区" prop="firstLocation">
+      <div style="position: relative">
+        <el-form-item label="我的详细地址" prop="location">
+          <el-input v-model="form.location" placeholder="请输入详细地址，右侧可快速选择"/>
+        </el-form-item>
         <el-cascader placeholder="请选择"
-                     style="width: 100%"
+                     style="width: 0; position: absolute; top: 0; right: 44px;"
                      :options="options"
-                     v-model="form.firstLocation"
-                     @change="locHandleChange(form.firstLocation)">
+                     v-model="form.locationArr"
+                     @change="locHandleChange(form.locationArr)">
         </el-cascader>
-      </el-form-item>
-      <el-form-item label="详细地址" prop="lastLocation">
-        <el-input v-model="form.lastLocation" placeholder="请输入"/>
-      </el-form-item>
+      </div>
       <el-form-item label="联系人" prop="contactsName">
         <el-input minlength="1" maxlength="5" v-model="form.contactsName"/>
       </el-form-item>
@@ -86,10 +86,9 @@ import {ElMessage} from 'element-plus'
 import {post, takeAccId} from '@/api/request.js'
 import {options, handleChange} from "@/utils";
 
-// 表单选择地址
-const locStr = ref('')
+// 表单选择地址并赋值给表单
 const locHandleChange = (locArr) => {
-  locStr.value = handleChange(locArr);
+  form.location = handleChange(locArr);
 }
 
 // 超出limit时触发的方法
@@ -126,8 +125,8 @@ const form = reactive({
   petType: 'cat', // 宠物种类
   petSex: '1', // 宠物性别
   isFree: '1', // 是否免费
-  firstLocation: '', // 地址选择片段
-  lastLocation: '', // 地址输入片段
+  locationArr: '', // 地址选择片段
+  location: '', // 地址输入片段
   picName: '', // 图片名
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
@@ -162,10 +161,7 @@ const rules = {
     {required: true, message: '请选择是否免费', trigger: 'change'},
     {pattern: /^[0-1]$/, message: '是否免费格式有误', trigger: 'blur'}
   ],
-  firstLocation: [
-    {required: true, message: '请选择地区', trigger: 'change'}
-  ],
-  lastLocation: [
+  location: [
     {required: true, message: '请输入详细地址', trigger: 'change'},
     {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
@@ -211,7 +207,7 @@ const submitForm = () => {
       formData.append("petType", form.petType)
       formData.append("petSex", form.petSex)
       formData.append("isFree", form.isFree)
-      formData.append("location", locStr.value + form.lastLocation)
+      formData.append("location", form.location)
       formData.append("contactsName", form.contactsName)
       formData.append("contactsPhone", form.contactsPhone)
       formData.append("contactsWechat", form.contactsWechat)

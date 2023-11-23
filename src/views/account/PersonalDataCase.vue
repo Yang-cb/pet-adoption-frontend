@@ -66,14 +66,17 @@
         <el-form-item label="个性签名" prop="signature">
           <el-input maxlength="20" v-model="form.signature" placeholder="什么都没有留下..."/>
         </el-form-item>
-        <el-form-item label="居住地" prop="location">
-          <el-cascader
-              style="width: 100%"
-              :options="options"
-              v-model="form.location"
-              @change="locHandleChange(form.location)">
+        <div style="position: relative">
+          <el-form-item label="居住地" prop="location">
+            <el-input v-model="form.location" placeholder="请输入详细地址，右侧可快速选择"/>
+          </el-form-item>
+          <el-cascader placeholder="请选择"
+                       style="width: 0; position: absolute; top: 0; right: 44px;"
+                       :options="options"
+                       v-model="form.locationArr"
+                       @change="locHandleChange(form.locationArr)">
           </el-cascader>
-        </el-form-item>
+        </div>
         <el-form-item label="性别" prop="sex">
           <el-radio-group v-model="form.sex">
             <el-radio-button label="1">男</el-radio-button>
@@ -296,8 +299,9 @@ const exitWithoutSave = () => {
 
 // 表单选择地址
 const locStr = ref('')
+const locArr = ref([])
 const locHandleChange = (locArr) => {
-  locStr.value = handleChange(locArr);
+  form.value.location = handleChange(locArr);
 }
 
 // 用户数据
@@ -363,7 +367,8 @@ const dToM = () => {
 const form = ref({
   nikeName: '', // 昵称
   signature: '', // 签名
-  location: [], //地区
+  locationArr: [], // 地址数组
+  location: '', //地区
   sex: '', // 性别
   birthday: '' // 出生日期
 })
@@ -391,7 +396,8 @@ const rules = {
     {type: 'date', message: '请输入正确的出生日期', trigger: 'change'}
   ],
   location: [
-    {required: true, message: '请选择地址', trigger: 'change'}
+    {required: true, message: '请输入详细地址', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
 }
 
@@ -409,7 +415,7 @@ const submitForm = async () => {
             id: takeAccId(),
             nikeName: form.value.nikeName,
             signature: form.value.signature === '' ? '什么都没有留下...' : form.value.signature,
-            location: locStr.value === '' ? '未知' : locStr.value,
+            location: form.value.location === '' ? '未知' : form.value.location,
             sex: form.value.sex,
             birthday: form.value.birthday
           }, () => {

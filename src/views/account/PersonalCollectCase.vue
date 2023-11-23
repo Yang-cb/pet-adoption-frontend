@@ -45,7 +45,6 @@ import {StarFilled} from "@element-plus/icons-vue";
 import {get, post, takeAccId} from "@/api/request";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {ref} from "vue";
-import router from "@/router";
 
 const getType = (petType) => {
   if (petType === 'other' || petType === '' || petType === null) {
