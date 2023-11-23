@@ -23,9 +23,14 @@
         <el-col :span="12">
           <!-- 资料 -->
           <div>
-            <el-tag v-if="pBData.isFree===1" style="font-size: 14px">免费</el-tag>
-            <el-tag v-else type="danger" style="font-size: 14px">付费</el-tag>
-            <span v-if="pBData.isFree===1" style="color: brown">【免费领养不要相信任何费用先付的骗术】</span>
+            <div>
+              <el-tag v-if="pBData.isFree===1" style="font-size: 14px">免费</el-tag>
+              <el-tag v-else type="danger" style="font-size: 14px">付费</el-tag>
+              <span v-if="pBData.isFree===1" style="color: brown">【免费领养不要相信任何费用先付的骗术】</span>
+            </div>
+            <p class="text"><span class="icon"><el-icon><Sugar/></el-icon></span>
+              宠物姓名：{{ getName(pBData.petName) }}
+            </p>
             <p class="text"><span class="icon"><el-icon><Calendar/></el-icon></span>
               发布时间：{{ pBData.gmtModified }}
             </p>
@@ -64,7 +69,7 @@
           </div>
           <div>
             <span class="icon"><el-icon><Plus/></el-icon></span>
-            <el-button type="text" class="bu_text">我想领养它</el-button>
+            <el-button type="text" class="bu_text" @click="wantAdoptFormVisible = true">我想领养它</el-button>
           </div>
         </el-col>
       </el-row>
@@ -75,6 +80,45 @@
       </div>
     </div>
   </div>
+  <el-dialog v-model="wantAdoptFormVisible" title="领养信息">
+    <el-form style="width: 90%;" ref="formRef" :model="wantAdoptForm" :rules="rules" label-width="150px"
+             class="demo-ruleForm"
+             status-icon>
+      <div style="position: relative">
+        <el-form-item label="我的详细地址" prop="lastLocation" >
+          <el-input v-model="wantAdoptForm.lastLocation" placeholder="请输入详细地址，右侧可快速选择"/>
+        </el-form-item>
+        <el-cascader placeholder="请选择"
+                     style="width: 0; position: absolute; top: 0; right: 44px;"
+                     :options="options"
+                     v-model="wantAdoptForm.firstLocation"
+                     @change="locHandleChange(wantAdoptForm.firstLocation)">
+        </el-cascader>
+      </div>
+      <el-form-item label="联系人" prop="contactsName">
+        <el-input minlength="1" maxlength="5" v-model="wantAdoptForm.contactsName"/>
+      </el-form-item>
+      <el-form-item label="联系电话" prop="contactsPhone">
+        <el-input minlength="11" maxlength="11" v-model="wantAdoptForm.contactsPhone"/>
+      </el-form-item>
+      <el-form-item label="微信号" prop="contactsWechat">
+        <el-input maxlength="11" v-model="wantAdoptForm.contactsWechat" placeholder="可不填"/>
+      </el-form-item>
+      <el-form-item label="邮箱" prop="contactsEmail">
+        <el-input minlength="6" v-model="wantAdoptForm.contactsEmail" placeholder="可不填"/>
+      </el-form-item>
+      <el-form-item label="领养条件" prop="text">
+        <el-input maxlength="300" v-model="wantAdoptForm.text" :autosize="{ minRows: 2, maxRows: 4 }" type="textarea"
+                  placeholder="请详细描述领养条件及家中宠物信息, 内容不得超过300字"/>
+      </el-form-item>
+      <el-form-item>
+        <el-button @click="resetForm()">重置</el-button>
+        <el-button type="primary" @click="submitForm()">
+          提交
+        </el-button>
+      </el-form-item>
+    </el-form>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -87,11 +131,61 @@ import {
   Location, Message, Phone,
   Picture as IconPicture, Plus,
   Postcard,
-  Star,
+  Star, Sugar,
   User
 } from '@element-plus/icons-vue'
-import {ref} from "vue";
-import {getPetImageUrl} from "@/utils";
+import {reactive, ref} from "vue";
+import {getPetImageUrl, options, handleChange} from "@/utils";
+import router from "@/router";
+
+// 表单选择地址
+const locStr = ref('')
+const locHandleChange = (locArr) => {
+  wantAdoptForm.lastLocation = handleChange(locArr);
+}
+
+const wantAdoptFormVisible = ref(false)
+
+const wantAdoptForm = reactive({
+  firstLocation: '', // 地址选择片段
+  lastLocation: '', // 地址输入片段
+  contactsName: '', // 联系人
+  contactsPhone: '',  // 电话
+  contactsWechat: '', // 微信
+  contactsEmail: '', // 邮箱
+  text: '' // 领养条件
+})
+
+const formRef = ref()
+
+// 提交表单
+const submitForm = async () => {
+  await formRef.value.validate((valid) => {
+    if (valid) {
+      post('/api/wantAdopt/addWantAdopt', {
+        accountId: takeAccId(),
+        petId: route.query.petId,
+        contactsLocation: wantAdoptForm.lastLocation,
+        contactsName: wantAdoptForm.contactsName,
+        contactsPhone: wantAdoptForm.contactsPhone,
+        contactsWechat: wantAdoptForm.contactsWechat,
+        contactsEmail: wantAdoptForm.contactsEmail,
+        text: wantAdoptForm.text
+      }, () => {
+        ElMessage.success('发布成功')
+        resetForm()
+      })
+    } else {
+      ElMessage.warning('请完整填写表单内容')
+    }
+  })
+}
+
+// 重置表单数据
+const resetForm = () => {
+  formRef.value.resetFields();
+}
+
 
 const pBData = ref([])
 
@@ -151,6 +245,37 @@ const getEmail = (email) => {
   if (email === null || email === '')
     return '未知'
   return email
+}
+
+// 宠物姓名
+const getName = (name) => {
+  if (name === null || name === '')
+    return '未知'
+  return name
+}
+
+const rules = {
+  lastLocation: [
+    {required: true, message: '请输入详细地址', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
+  ],
+  contactsName: [
+    {required: true, message: '请输入联系人', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
+  ],
+  contactsPhone: [
+    {required: true, message: '请输入手机号', trigger: 'change',},
+    {pattern: '^1[3456789]\\d{9}$', message: '请输入合法的手机号', trigger: 'blur'}
+  ],
+  contactsWechat: [
+    {pattern: "^[a-zA-Z][a-zA-Z0-9_-]{5,19}$", message: '请输入合法的微信号', trigger: 'blur'}
+  ],
+  contactsEmail: [
+    {type: 'email', message: '请输入合法的电子邮件地址', trigger: 'blur'}
+  ],
+  text: [
+    {required: true, message: '请详细描述领养条件及家中宠物信息', trigger: 'blur'}
+  ],
 }
 </script>
 

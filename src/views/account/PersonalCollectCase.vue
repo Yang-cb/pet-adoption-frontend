@@ -2,7 +2,7 @@
   <div>
     <el-space :fill="true" wrap style="width: 100%; align-content: center;">
       <span v-if="personalCollectData.length===0">暂无收藏</span>
-      <el-card v-for="collectData in personalCollectData" :key="personalCollectData"
+      <el-card v-for="collectData in personalCollectData" :key="personalCollectData.petId"
                style="height: 300px; margin: 0 100px">
         <template #header>
           <div style="display: flex; justify-content: space-between;">
@@ -68,7 +68,7 @@ const openUnCollect = (petId) => {
         type: 'warning',
       })
       .then(() => {
-            post('/api/acc2pic/cancelCollectPB', {
+            post('/api/acc2pic/collectPB', {
               accId: takeAccId(),
               petId: petId
             }, () => {

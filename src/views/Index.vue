@@ -25,9 +25,9 @@ function userLogout() {
 
 // 收起菜单前往个人资料
 const toPersonalData = () => {
-  isCollapse.value = true;
-  router.push('/personalData');
+  router.push('personalData');
 }
+
 </script>
 
 <template>
@@ -35,7 +35,17 @@ const toPersonalData = () => {
     <!-- 外层容器。当子元素中包含<el-header>时，全部子元素会垂直上下排列，否则会水平左右排列。 -->
     <el-container class="layout-container-demo" style="height: 100vh">
       <!-- 顶栏容器 -->
-      <el-header>
+      <el-header style="position: relative">
+        <!-- 面包屑 -->
+        <span style="position: absolute; left: 210px; bottom: 5px">
+          <el-breadcrumb separator="/">
+            <el-breadcrumb-item
+                v-for="breadcrumb in router.currentRoute.value.matched"
+                :key="breadcrumb.path" :to="{ path: breadcrumb.path }">
+              {{ breadcrumb.meta.title }}
+            </el-breadcrumb-item>
+          </el-breadcrumb>
+        </span>
         <!-- 收起菜单-->
         <el-radio-group v-model="isCollapse" style="height: 100%;">
           <el-radio-button :label="!isCollapse">
@@ -47,7 +57,7 @@ const toPersonalData = () => {
         <div class="toolbar">
           <!-- 头像 -->
           <div>
-            <el-avatar v-bind:src="getAccImageUrl(personalData.picName)" />
+            <el-avatar v-bind:src="getAccImageUrl(personalData.picName)"/>
           </div>
           <!-- 下拉菜单 -->
           <el-dropdown>
@@ -59,7 +69,7 @@ const toPersonalData = () => {
                 <div style="margin-left: 20px; margin-bottom: 20px">
                   <!-- 头像 -->
                   <div>
-                    <el-button type='' link @click="toPersonalData">
+                    <el-button type='' link @click="toPersonalData()">
                       <el-avatar :size="80" :src="getAccImageUrl(personalData.picName)"/>
                     </el-button>
                   </div>
@@ -69,10 +79,12 @@ const toPersonalData = () => {
                 </div>
                 <el-dropdown-menu>
                   <el-dropdown-item>
-                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="toPersonalData">个人资料</el-button>
+                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="toPersonalData">个人资料
+                    </el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>
-                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="userLogout">退出登录</el-button>
+                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="userLogout">退出登录
+                    </el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </div>

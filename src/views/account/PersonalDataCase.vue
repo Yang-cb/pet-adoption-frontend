@@ -40,8 +40,8 @@
         router
         mode="horizontal"
     >
-      <el-menu-item index="/personalData/post">发帖</el-menu-item>
-      <el-menu-item index="/personalData/collect">收藏</el-menu-item>
+      <el-menu-item index="post">发帖</el-menu-item>
+      <el-menu-item index="collect">收藏</el-menu-item>
     </el-menu>
     <div class="PRoC">
       <router-view></router-view>

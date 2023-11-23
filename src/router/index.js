@@ -1,5 +1,6 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import {unauthorized} from '@/api/request.js';
+import NotFound from '@/views/NotFound.vue'
 import Auth from '@/views/Auth.vue'
 import AuthLogin from '@/views/auth/LoginCase.vue'
 import AuthRegister from '@/views/auth/RegisterCase.vue'
@@ -18,21 +19,26 @@ const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes: [
         {
+            path: '/:catchAll(.*)',
+            component: NotFound,
+        }, {
             path: '/',
             name: 'auth',
             component: Auth,
+            // 默认访问路径
+            redirect: '/login',
             children: [
                 {
-                    path: '',
-                    name: '登录',
+                    path: 'login',
+                    name: 'authLogin',
                     component: AuthLogin
                 }, {
                     path: 'register',
-                    name: '注册',
+                    name: 'authRegister',
                     component: AuthRegister
                 }, {
                     path: 'resetPw',
-                    name: '重置密码',
+                    name: 'authResetPw',
                     component: AuthResetPw
                 }
             ]
@@ -40,51 +46,67 @@ const router = createRouter({
         // 主页
         {
             path: '/index',
-            name: 'index',
+            name: 'main',
             component: Index,
+            meta: {
+                title: '首页'
+            },
             // 默认访问路径
             redirect: '/index/allPB',
-            children: [
-                {
-                    path: 'allPB',
-                    name: '展示全部布告',
-                    component: AllPB
-                }, {
-                    path: 'onePBData',
-                    name: '展示一个布告详细',
-                    component: OneBulletinData
-                }, {
-                    path: 'publishAway',
-                    name: '发布宠物求抱走信息',
-                    component: PublishAway
-                }, {
-                    path: 'publishAdopt',
-                    name: '发布宠物想领养信息',
-                    component: PublishAdopt
+            children: [{
+                path: 'allPB',
+                name: 'mainAllPB',
+                component: AllPB,
+                meta: {
+                    title: '全部宠物信息'
                 },
-                {
-                    path: '/personalData',
-                    name: '个人页',
-                    component: PersonalData,
-                    redirect: '/personalData/post',
-                    children: [
-                        {
-                            path: 'post',
-                            name: '个人发帖',
-                            component: PersonalPost
-                        },
-                        {
-                            path: 'collect',
-                            name: '个人收藏',
-                            component: PersonalCollect
-                        }
-                    ]
+                children: []
+            }, {
+                path: 'onePBData',
+                name: 'mainOnePBData',
+                component: OneBulletinData,
+                meta: {
+                    title: '宠物详细信息'
                 },
-                {
-                    path: '/personalEditPost',
-                    name: '编辑发布过的宠物',
-                    component: PersonalEditPost
-                }
+            }, {
+                path: 'publishAway',
+                name: 'mainPublishAway',
+                component: PublishAway,
+                meta: {
+                    title: '发布领养信息'
+                },
+            }, {
+                path: 'publishAdopt',
+                name: 'mainPublishAdopt',
+                component: PublishAdopt,
+                meta: {
+                    title: '发布领养信息'
+                },
+            }, {
+                path: 'personalData',
+                name: 'mainPersonalData',
+                component: PersonalData,
+                meta: {
+                    title: '个人详情'
+                },
+                redirect: '/index/personalData/post',
+                children: [
+                    {
+                        path: 'post',
+                        name: 'mainPersonalPost',
+                        component: PersonalPost,
+                        children: [{
+                            path: 'personalEditPost',
+                            name: 'mainPersonalEditPost',
+                            component: PersonalEditPost
+                        }]
+                    }, {
+                        path: 'collect',
+                        name: 'mainPersonalCollect',
+                        component: PersonalCollect
+                    }
+                ]
+            }
             ]
         }
     ]
@@ -92,14 +114,18 @@ const router = createRouter({
 
 // 路由守护
 // router.beforeEach((to, from, next) => {
+//     // 判断用户是否未登录
 //     const isUnauthorized = unauthorized()
+//     console.log(to.name)
 //     // 用户已经登录，去访问auth* ：重定向到index
-//     if (to.name.startsWith('auth') && !isUnauthorized) {
+//     if (to.name.startsWith('auth', 0) && !isUnauthorized) {
 //         next('/index')
 //     }
 //     // 用户未登录，去访问index* ：重定向到auth
-//     else if (to.name.startsWith('index') && isUnauthorized) {
+//     else if (to.name.startsWith('main', 0) && isUnauthorized) {
 //         next('/')
+//     } else if (to.path === '/:catchAll(.*)') {
+//         next()
 //     } else {
 //         next()
 //     }

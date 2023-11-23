@@ -57,7 +57,7 @@ const router = useRouter()
 
 const openEditOnePost = (petId) => {
   router.push({
-    path: '/personalEditPost',
+    path: '/index/personalData/post/personalEditPost',
     query: {
       petId: petId
     }

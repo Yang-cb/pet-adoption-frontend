@@ -1,7 +1,7 @@
 <template>
   <div style="margin-top: 10px;">
     <ul style="list-style: none; padding: 0;margin: 0; ">
-      <li v-for="(pb) in pBList" style="width: 100% ;height: 140px; ">
+      <li v-for="(pb) in pBList" :key="pb.petId" style="width: 100% ;height: 140px; ">
         <a @click="petData(pb.petId)" style="display: flex;">
           <!-- 图片 -->
           <div style=" margin: 10px; font-size: 0;">
@@ -16,7 +16,6 @@
               <el-tag v-if="pb.isFree===1">免费</el-tag>
               <el-tag v-else type="danger">付费</el-tag>
               <!-- 发布时间 -->
-
               <el-text>
                 <el-icon>
                   <Calendar/>
@@ -65,7 +64,7 @@ const getType = (petType) => {
 const router = useRouter();
 const petData = (petId) => {
   router.push({
-    path: 'onePBData',
+    path: '/index/onePBData',
     query: {
       petId: petId
     }
