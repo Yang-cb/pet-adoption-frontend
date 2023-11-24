@@ -8,7 +8,7 @@
       <el-row>
         <el-col :span="12">
           <!-- 图片 -->
-          <div style="width: 300px;height: 300px">
+          <div style="width: 350px; height: 350px">
             <el-image style="width: 100%" v-bind:src="pBData.picName">
               <template #error>
                 <div style="width: 100%;height: 100%">
@@ -29,48 +29,67 @@
               <span v-if="pBData.isFree===1" style="color: brown">【免费领养不要相信任何费用先付的骗术】</span>
             </div>
             <p class="text"><span class="icon"><el-icon><Sugar/></el-icon></span>
-              宠物姓名：{{ getName(pBData.petName) }}
+              <span class="text_title">宠物姓名</span>：
+              {{ getName(pBData.petName) }}
             </p>
             <p class="text"><span class="icon"><el-icon><Calendar/></el-icon></span>
-              发布时间：{{ pBData.gmtModified }}
+              <span class="text_title">发布时间</span>：
+              {{ pBData.gmtModified }}
             </p>
             <p class="text"><span class="icon"><el-icon><Postcard/></el-icon></span>
-              宠物种类：{{ getType(pBData.petType) }}({{ pBData.petSex === 1 ? '公' : '母' }})
+              <span class="text_title">宠物种类</span>：
+              {{ getType(pBData.petType) }} ({{ pBData.petSex === 1 ? '公' : '母' }})
             </p>
             <p class="text"><span class="icon"><el-icon><Location/></el-icon></span>
-              领养地点：{{ pBData.location }}
+              <span class="text_title">领养地点</span>：
+              {{ pBData.location }}
             </p>
             <p class="text"><span class="icon"><el-icon><User/></el-icon></span>
-              联系人：{{ pBData.contactsName }}
+              <span class="text_title">联系人</span>：
+              {{ pBData.contactsName }}
             </p>
             <p class="text"><span class="icon"><el-icon><Phone/></el-icon></span>
-              联系电话：{{ pBData.contactsPhone }}
+              <span class="text_title">联系电话</span>：
+              {{ pBData.contactsPhone }}
             </p>
             <p class="text"><span class="icon"><el-icon><ChatDotRound/></el-icon></span>
-              微信号：{{ getWechat(pBData.contactsWechat) }}
+              <span class="text_title">微信号</span>：
+              {{ getWechat(pBData.contactsWechat) }}
             </p>
             <p class="text"><span class="icon"><el-icon><Message/></el-icon></span>
-              电子邮件：{{ getEmail(pBData.contactsEmail) }}
+              <span class="text_title">电子邮件</span>：
+              {{ getEmail(pBData.contactsEmail) }}
             </p>
           </div>
 
-          <!-- 收藏 -->
-          <!-- 根据用户是否已经收藏该宠物，决定展示哪个图标 -->
-          <div>
-            <span class="icon"><el-icon><Star/></el-icon></span>
+          <el-row>
             <!-- 收藏 -->
-            <el-button v-show="!isCollect" type="text" @click="collectPB" class="bu_text">
-              {{ !collect ? '点击收藏' : '取消收藏' }}
-            </el-button>
-            <!-- 取消收藏 -->
-            <el-button v-show="isCollect" type="text" style="margin-left: 3px;" @click="collectPB" class="bu_text">
-              {{ collect ? '点击收藏' : '取消收藏' }}
-            </el-button>
-          </div>
-          <div>
-            <span class="icon"><el-icon><Plus/></el-icon></span>
-            <el-button type="text" class="bu_text" @click="wantAdoptFormVisible = true">我想领养它</el-button>
-          </div>
+            <!-- 根据用户是否已经收藏该宠物，决定展示哪个图标 -->
+            <div>
+              <!-- 收藏 -->
+              <el-button v-show="!isCollect" round @click="collectPB" class="bu_text">
+                <el-icon>
+                  <Star/>
+                </el-icon>
+                {{ !collect ? '点击收藏' : '取消收藏' }}
+              </el-button>
+              <!-- 取消收藏 -->
+              <el-button v-show="isCollect" round style="margin-left: 3px;" @click="collectPB" class="bu_text">
+                <el-icon>
+                  <Star/>
+                </el-icon>
+                {{ collect ? '点击收藏' : '取消收藏' }}
+              </el-button>
+            </div>
+            <div>
+              <el-button round class="bu_text" @click="wantAdoptFormVisible = true">
+                <el-icon>
+                  <Plus/>
+                </el-icon>
+                我想领养它
+              </el-button>
+            </div>
+          </el-row>
         </el-col>
       </el-row>
       <!-- 详细介绍 -->
@@ -301,13 +320,17 @@ const rules = {
 
 .text {
   margin: 10px 0;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .bu_text {
-  color: black;
-  font-size: 16px;
-  margin-left: 3px;
   margin-bottom: 3px;
+}
+
+.text_title {
+  display: inline-block;
+  width: 80px;
+  text-align: center;
+  font-weight: bold;
 }
 </style>

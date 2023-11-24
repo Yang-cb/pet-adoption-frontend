@@ -1,35 +1,3 @@
-<script setup>
-import {logout} from '@/api/request.js'
-import router from "@/router/index.js";
-import {ref} from 'vue'
-import {Location, Menu, ArrowDownBold} from '@element-plus/icons-vue'
-import {ElMessage} from "element-plus";
-import {get, takeAccId} from "@/api/request.js";
-import {getAccImageUrl} from "@/utils";
-
-// 用户数据
-const personalData = ref([])
-get('/api/account?id=' + takeAccId(), (data) => {
-  personalData.value = data
-}, (err) => {
-  ElMessage.error(err)
-})
-
-// 菜单是否收起
-const isCollapse = ref(false)
-
-// 退出登录
-function userLogout() {
-  logout(() => router.push("/"))
-}
-
-// 收起菜单前往个人资料
-const toPersonalData = () => {
-  router.push('personalData');
-}
-
-</script>
-
 <template>
   <div style="height: 100vh; ">
     <!-- 外层容器。当子元素中包含<el-header>时，全部子元素会垂直上下排列，否则会水平左右排列。 -->
@@ -97,7 +65,9 @@ const toPersonalData = () => {
         <!-- 侧边栏容器 -->
         <el-aside :width="isCollapse?'0px':'200px'">
           <el-menu
-              default-active="2"
+              :default-active="activeIndex"
+              @select="handleSelect"
+              active-text-color="#4985ED"
               class="el-menu-vertical-demo"
               :collapse="isCollapse"
               :collapse-transition="false"
@@ -108,7 +78,7 @@ const toPersonalData = () => {
                 <el-icon>
                   <location/>
                 </el-icon>
-                <span>Navigator One</span>
+                <span>领养宠物</span>
               </template>
               <el-menu-item-group>
                 <template #title><span>Group One</span></template>
@@ -129,6 +99,17 @@ const toPersonalData = () => {
               <el-menu-item index="/index/publishAway">求抱走</el-menu-item>
               <el-menu-item index="/index/publishAdopt">想领养</el-menu-item>
             </el-sub-menu>
+            <el-sub-menu index="3">
+              <template #title>
+                <el-icon>
+                  <location/>
+                </el-icon>
+                <span>个人中心</span>
+              </template>
+              <el-menu-item index="/index/personalData">个人资料</el-menu-item>
+              <el-menu-item-group title="Group Two">
+              </el-menu-item-group>
+            </el-sub-menu>
           </el-menu>
         </el-aside>
 
@@ -140,6 +121,45 @@ const toPersonalData = () => {
     </el-container>
   </div>
 </template>
+
+<script setup>
+import {logout} from '@/api/request.js'
+import router from "@/router/index.js";
+import {ref} from 'vue'
+import {Location, Menu, ArrowDownBold} from '@element-plus/icons-vue'
+import {ElMessage} from "element-plus";
+import {get, takeAccId} from "@/api/request.js";
+import {getAccImageUrl} from "@/utils";
+
+// 菜单激活项
+const activeIndex = sessionStorage.getItem('keyPath') || '/index/allPB'
+// 将激活项存入sessionStorage
+const handleSelect = (keyPath) => {
+  sessionStorage.setItem('keyPath', keyPath);
+}
+
+// 用户数据
+const personalData = ref([])
+get('/api/account?id=' + takeAccId(), (data) => {
+  personalData.value = data
+}, (err) => {
+  ElMessage.error(err)
+})
+
+// 菜单是否收起
+const isCollapse = ref(false)
+
+// 退出登录
+function userLogout() {
+  logout(() => router.push("/"))
+}
+
+// 收起菜单前往个人资料
+const toPersonalData = () => {
+  router.push('personalData');
+}
+
+</script>
 
 <style scoped>
 .layout-container-demo .el-header {

@@ -14,6 +14,7 @@ import PersonalCollect from "@/views/account/PersonalCollectCase.vue";
 import PersonalPost from "@/views/account/PersonalPostCase.vue";
 import OneBulletinData from "@/views/bulletin/OneBulletinDataCase.vue";
 import PersonalEditPost from "@/views/account/PersonalEditPostCase.vue";
+import PersonalWantAdopt from "@/views/account/PersonalWantAdoptCase.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -87,7 +88,7 @@ const router = createRouter({
                 name: 'mainPersonalData',
                 component: PersonalData,
                 meta: {
-                    title: '个人详情'
+                    title: '个人资料'
                 },
                 redirect: '/index/personalData/post',
                 children: [
@@ -100,6 +101,10 @@ const router = createRouter({
                         path: 'collect',
                         name: 'mainPersonalCollect',
                         component: PersonalCollect
+                    }, {
+                        path: 'wantAdopt',
+                        name: 'mainPersonalWantAdopt',
+                        component: PersonalWantAdopt
                     }
                 ]
             }, {

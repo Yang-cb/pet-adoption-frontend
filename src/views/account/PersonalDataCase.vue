@@ -35,13 +35,14 @@
 
     <!--    发帖 收藏-->
     <el-menu
-        :default-active="'/personalData/post'"
+        :default-active="$route.path"
         style="margin: 50px 76px; padding: 0 72px;"
         router
         mode="horizontal"
     >
       <el-menu-item index="post">发帖</el-menu-item>
       <el-menu-item index="collect">收藏</el-menu-item>
+      <el-menu-item index="wantAdopt">想领养</el-menu-item>
     </el-menu>
     <div class="PRoC">
       <router-view></router-view>
@@ -68,7 +69,7 @@
         </el-form-item>
         <div style="position: relative">
           <el-form-item label="居住地" prop="location">
-            <el-input v-model="form.location" placeholder="请输入详细地址，右侧可快速选择"/>
+            <el-input readonly v-model="form.location" placeholder="请输入详细地址，右侧可快速选择"/>
           </el-form-item>
           <el-cascader placeholder="请选择"
                        style="width: 0; position: absolute; top: 0; right: 44px;"
@@ -205,6 +206,7 @@ import {takeAccId} from '@/api/request.js'
 import {strToDate, options, handleChange, getAccImageUrl} from '@/utils'
 import {Edit, Location} from "@element-plus/icons-vue";
 
+// 修改界面对话框
 const openEdit = (accountId) => {
   get('/api/account?id=' + accountId, (data) => {
     form.value = data

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-space :fill="true" wrap style="width: 100%; align-content: center;">
-      <el-card v-for="postData in personalPostData" :key="personalPostData" style="height: 300px; margin: 0 100px">
+      <el-card v-for="postData in personalPostData" :key="postData.petId" style="height: 300px; margin: 0 100px">
         <template #header>
           <div style="display: flex; justify-content: space-between;">
             <div>

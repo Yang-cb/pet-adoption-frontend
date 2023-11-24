@@ -12,24 +12,28 @@
           <div style="flex: 1;">
             <h4>{{ pb.title }}</h4>
             <div>
-              <el-tag>{{ getType(pb.getType) }}</el-tag>
-              <el-tag v-if="pb.isFree===1">免费</el-tag>
-              <el-tag v-else type="danger">付费</el-tag>
-              <!-- 发布时间 -->
-              <el-text>
-                <el-icon>
-                  <Calendar/>
-                </el-icon>
-                {{ pb.gmtCreate }}
-              </el-text>
-              <div style="width: 200px;">
-                <!-- 领养地址 -->
-                <el-text truncated>
+              <div>
+                <el-tag>{{ getType(pb.getType) }}</el-tag>
+                <!-- 发布时间 -->
+                <el-text>
                   <el-icon>
-                    <Location/>
+                    <Calendar/>
                   </el-icon>
-                  {{ pb.location }}
+                  {{ pb.gmtCreate }}
                 </el-text>
+              </div>
+              <div style="display: flex">
+                <el-tag v-if="pb.isFree===1">免费</el-tag>
+                <el-tag v-else type="danger">付费</el-tag>
+                <div style="width: 200px;">
+                  <!-- 领养地址 -->
+                  <el-text truncated>
+                    <el-icon>
+                      <Location/>
+                    </el-icon>
+                    {{ pb.location }}
+                  </el-text>
+                </div>
               </div>
               <div style="width: 300px;">
                 <!-- 详细介绍 -->
