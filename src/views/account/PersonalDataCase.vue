@@ -42,7 +42,6 @@
     >
       <el-menu-item index="post">发帖</el-menu-item>
       <el-menu-item index="collect">收藏</el-menu-item>
-      <el-menu-item index="wantAdopt">想领养</el-menu-item>
     </el-menu>
     <div class="PRoC">
       <router-view></router-view>
@@ -300,8 +299,6 @@ const exitWithoutSave = () => {
 }
 
 // 表单选择地址
-const locStr = ref('')
-const locArr = ref([])
 const locHandleChange = (locArr) => {
   form.value.location = handleChange(locArr);
 }

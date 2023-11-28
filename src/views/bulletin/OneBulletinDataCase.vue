@@ -61,7 +61,7 @@
               {{ getEmail(pBData.contactsEmail) }}
             </p>
           </div>
-
+          <!-- 按钮 -->
           <el-row>
             <!-- 收藏 -->
             <!-- 根据用户是否已经收藏该宠物，决定展示哪个图标 -->
@@ -183,12 +183,12 @@ const submitForm = async () => {
       post('/api/wantAdopt/addWantAdopt', {
         accountId: takeAccId(),
         petId: route.query.petId,
-        contactsLocation: wantAdoptForm.lastLocation,
-        contactsName: wantAdoptForm.contactsName,
-        contactsPhone: wantAdoptForm.contactsPhone,
-        contactsWechat: wantAdoptForm.contactsWechat,
-        contactsEmail: wantAdoptForm.contactsEmail,
-        text: wantAdoptForm.text
+        wantContactsLocation: wantAdoptForm.lastLocation,
+        wantContactsName: wantAdoptForm.contactsName,
+        wantContactsPhone: wantAdoptForm.contactsPhone,
+        wantContactsWechat: wantAdoptForm.contactsWechat,
+        wantContactsEmail: wantAdoptForm.contactsEmail,
+        wantText: wantAdoptForm.text
       }, () => {
         ElMessage.success('发布成功')
         resetForm()

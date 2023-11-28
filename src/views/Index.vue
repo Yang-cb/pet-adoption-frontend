@@ -76,7 +76,7 @@
             <el-sub-menu index="1">
               <template #title>
                 <el-icon>
-                  <location/>
+                  <HomeFilled/>
                 </el-icon>
                 <span>领养宠物</span>
               </template>
@@ -92,7 +92,7 @@
             <el-sub-menu index="2">
               <template #title>
                 <el-icon>
-                  <location/>
+                  <Promotion/>
                 </el-icon>
                 <span>发布领养信息</span>
               </template>
@@ -102,7 +102,7 @@
             <el-sub-menu index="3">
               <template #title>
                 <el-icon>
-                  <location/>
+                  <UserFilled/>
                 </el-icon>
                 <span>个人中心</span>
               </template>
@@ -110,11 +110,23 @@
               <el-menu-item-group title="Group Two">
               </el-menu-item-group>
             </el-sub-menu>
+            <el-sub-menu index="4">
+              <template #title>
+                <el-icon>
+                  <Comment/>
+                </el-icon>
+                <span>消息处理</span>
+              </template>
+              <el-menu-item index="/index/adoptRequest">发送的领养请求</el-menu-item>
+              <el-menu-item index="/index/handleAdoptRequest">收到的领养请求</el-menu-item>
+              <el-menu-item-group title="Group Two">
+              </el-menu-item-group>
+            </el-sub-menu>
           </el-menu>
         </el-aside>
 
-        <!-- 主要区域容器 -->
-        <el-main>
+        <!-- 主要区域容器：去除右侧滚动条 -->
+        <el-main style="overflow-y: hidden;">
           <router-view></router-view>
         </el-main>
       </el-container>
@@ -126,7 +138,7 @@
 import {logout} from '@/api/request.js'
 import router from "@/router/index.js";
 import {ref} from 'vue'
-import {Location, Menu, ArrowDownBold} from '@element-plus/icons-vue'
+import {Menu, ArrowDownBold, HomeFilled, UserFilled, Comment, Promotion} from '@element-plus/icons-vue'
 import {ElMessage} from "element-plus";
 import {get, takeAccId} from "@/api/request.js";
 import {getAccImageUrl} from "@/utils";

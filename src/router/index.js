@@ -14,7 +14,8 @@ import PersonalCollect from "@/views/account/PersonalCollectCase.vue";
 import PersonalPost from "@/views/account/PersonalPostCase.vue";
 import OneBulletinData from "@/views/bulletin/OneBulletinDataCase.vue";
 import PersonalEditPost from "@/views/account/PersonalEditPostCase.vue";
-import PersonalWantAdopt from "@/views/account/PersonalWantAdoptCase.vue";
+import AdoptRequest from "@/views/ask/AdoptRequestCase.vue";
+import HandleAdoptRequest from "@/views/ask/HandleAdoptRequestCase.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -101,10 +102,6 @@ const router = createRouter({
                         path: 'collect',
                         name: 'mainPersonalCollect',
                         component: PersonalCollect
-                    }, {
-                        path: 'wantAdopt',
-                        name: 'mainPersonalWantAdopt',
-                        component: PersonalWantAdopt
                     }
                 ]
             }, {
@@ -114,7 +111,22 @@ const router = createRouter({
                 meta: {
                     title: '修改宠物信息'
                 },
-            }]
+            }, {
+                path: 'adoptRequest',
+                name: 'mainAdoptRequest',
+                component: AdoptRequest,
+                meta: {
+                    title: '发送的请求'
+                },
+            }, {
+                path: 'handleAdoptRequest',
+                name: 'mainHandleAdoptRequest',
+                component: HandleAdoptRequest,
+                meta: {
+                    title: '收到的请求'
+                },
+            }
+            ]
         }
     ]
 })
