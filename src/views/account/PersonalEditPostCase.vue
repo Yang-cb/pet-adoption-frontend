@@ -97,7 +97,7 @@ const formRef = ref()
 const submitForm = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
-      put('/api/pet/updatePetByPetId', {
+      put('/api/postBul/updatePetByPetId', {
         petId: route.query.petId,
         petName: editForm.value.petName,
         petType: editForm.value.petType,

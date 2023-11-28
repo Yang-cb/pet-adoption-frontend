@@ -126,7 +126,7 @@ const formRef = ref()
 const submitForm = async () => {
   await formRef.value.validate((valid) => {
     if (valid) {
-      post('/api/pet/publishBulletin', {
+      post('/api/postBul/publishBulletin', {
         type: 'adopt', // 想领养
         petType: form.petType,
         sex: form.sex,

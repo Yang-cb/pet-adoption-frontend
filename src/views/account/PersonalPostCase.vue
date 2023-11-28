@@ -101,7 +101,7 @@ const openEditOnePost = (petId) => {
   })
 }
 
-// 删除一条宠物数据
+// 删除一条用户发布的宠物布告数据
 const openDeleteOnePost = (petId) => {
   ElMessageBox.confirm(
       '此操作不可逆，你确定要删除吗?',
@@ -113,7 +113,7 @@ const openDeleteOnePost = (petId) => {
       }
   )
       .then(() => {
-        post('/api/acc2pic/deletePostPB', {
+        post('/api/postBul/deletePostPB', {
           petId: petId,
           accId: takeAccId()
         }, () => {
@@ -129,7 +129,7 @@ const openDeleteOnePost = (petId) => {
 
 // 获取用户发布的宠物数据
 const getPots = () => {
-  get('/api/acc2pic/getPostPB?id=' + takeAccId(), (data) => {
+  get('/api/postBul/getPostPB?id=' + takeAccId(), (data) => {
     for (let i = 0; i < data.length; i++) {
       data[i].picName = getPetImageUrl(data[i].picName)
     }

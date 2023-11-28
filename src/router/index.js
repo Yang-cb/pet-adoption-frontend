@@ -1,5 +1,4 @@
 import {createRouter, createWebHistory} from 'vue-router'
-import {unauthorized} from '@/api/request.js';
 import NotFound from '@/views/NotFound.vue'
 import Auth from '@/views/Auth.vue'
 import AuthLogin from '@/views/auth/LoginCase.vue'

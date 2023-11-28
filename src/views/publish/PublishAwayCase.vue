@@ -214,7 +214,7 @@ const submitForm = () => {
       formData.append("contactsEmail", form.contactsEmail)
       formData.append("title", form.title)
       formData.append("text", form.text)
-      post('/api/pet/publishBulletin', formData, () => {
+      post('/api/postBul/publishBulletin', formData, () => {
         ElMessage.success('发布成功')
       }, () => {
         ElMessage.error('发布失败')

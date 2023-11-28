@@ -92,7 +92,7 @@ const openUnCollect = (petId) => {
         type: 'warning',
       })
       .then(() => {
-            post('/api/acc2pic/collectPB', {
+            post('/api/collectBul/collectPB', {
               accId: takeAccId(),
               petId: petId
             }, () => {
@@ -110,7 +110,7 @@ const openUnCollect = (petId) => {
 // 获取收藏列表
 const personalCollectData = ref([])
 const getCollections = () => {
-  get('/api/acc2pic/getCollectPB?id=' + takeAccId(), (data) => {
+  get('/api/collectBul/getCollectPB?id=' + takeAccId(), (data) => {
     for (let i = 0; i < data.length; i++) {
       data[i].picName = getPetImageUrl(data[i].picName)
     }

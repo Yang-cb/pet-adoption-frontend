@@ -212,7 +212,7 @@ const collect = ref(false)
 
 // 收藏/取消收藏
 const collectPB = () => {
-  post('/api/acc2pic/collectPB', {
+  post('/api/collectBul/collectPB', {
     accId: takeAccId(),
     petId: route.query.petId
   }, (msg) => {
@@ -236,7 +236,7 @@ get('/api/pet/getPBByPetId?petId=' + route.query.petId, (data) => {
 // 该用户是否已收藏该宠物
 const isCollect = ref(false)
 const getIsCollect = () => {
-  get('/api/acc2pic/isCollect?accId=' + takeAccId() + '&petId=' + route.query.petId, (data) => {
+  get('/api/collectBul/isCollect?accId=' + takeAccId() + '&petId=' + route.query.petId, (data) => {
     isCollect.value = data
   }, (err) => {
     console.log(err)
