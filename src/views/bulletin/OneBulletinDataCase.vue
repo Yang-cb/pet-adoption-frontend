@@ -215,8 +215,8 @@ const collectPB = () => {
   post('/api/collectBul/collectPB', {
     accId: takeAccId(),
     petId: route.query.petId
-  }, (msg) => {
-    ElMessage.success(msg)
+  }, () => {
+    ElMessage.success('操作成功')
     collect.value = !collect.value
   }, (err) => {
     ElMessage.error(err)
@@ -300,7 +300,7 @@ const rules = {
 
 <style>
 .b_main {
-  height: 100px;
+  height: 100vh;
   margin: 0 76px;
   padding: 0 72px;
 }
@@ -309,6 +309,7 @@ const rules = {
   height: 300px;
   padding: 28px;
   font-size: 15px;
+  text-indent: 2em;
   margin-top: 50px;
   box-shadow: var(--el-box-shadow-light);
 }

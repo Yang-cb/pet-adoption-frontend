@@ -132,6 +132,8 @@
       </el-container>
     </el-container>
   </div>
+  <!-- 回到顶部 -->
+  <el-backtop :right="100" :bottom="100"/>
 </template>
 
 <script setup>
