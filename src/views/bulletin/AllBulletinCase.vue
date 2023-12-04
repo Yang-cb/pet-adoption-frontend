@@ -2,23 +2,23 @@
   <div style="margin-top: 20px; margin-bottom: 100px">
     <div>
       <div>
-        <el-affix :offset="120">
-          <el-button type="primary">Offset top 120px</el-button>
-        </el-affix>
+
       </div>
-      <ul style="list-style: none; padding: 0; margin: 0; width: 70%;">
+      <ul style="list-style: none; padding: 0; margin: 20px 30px; width: 70%;">
         <li v-for="(pb, index) in pBList" :key="pb.petId"
             v-show="currentPage * pageSize >= index + 1 && (currentPage - 1) * pageSize < index + 1"
-            @click="petData(pb.petId)"
             style="height: 140px;">
           <div style="display: flex;">
             <!-- 图片 -->
             <div style="margin: 10px; font-size: 0;">
               <el-image fit='cover' style="width: 120px; height: 100%;"
-                        v-bind:src="pb.picName"/>
+                        v-bind:src="pb.picName"
+                        :preview-src-list="srcList"
+                        @click="preview(pb.picName)"/>
             </div>
-            <!-- 标题 -->
-            <div style="flex: 1;">
+            <!-- 描述信息 -->
+            <div @click="petData(pb.petId)"
+                 style="flex: 1;">
               <h4>{{ pb.title }}</h4>
               <div>
                 <div>
@@ -93,6 +93,14 @@ import {getPetImageUrl} from '@/utils'
 import {useRouter} from 'vue-router'
 // 中文包
 import zhCn from 'element-plus/es/locale/lang/zh-cn';
+
+// 图片预览
+const srcList = ref([]);
+const preview = (photo) => {
+  // 清除原本的预览
+  srcList.value = [];
+  srcList.value.push(photo);
+}
 
 // 第几页，默认1
 const currentPage = ref(1)

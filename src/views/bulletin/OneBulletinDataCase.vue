@@ -8,8 +8,11 @@
       <el-row>
         <el-col :span="12">
           <!-- 图片 -->
-          <div style="width: 350px; height: 350px">
-            <el-image style="width: 100%" v-bind:src="pBData.picName">
+          <div style="width: 315px; height: 315px">
+            <el-image style="width: 100%" v-bind:src="pBData.picName"
+                      :preview-src-list="srcList"
+                      @click="preview(pBData.picName)"
+            >
               <template #error>
                 <div style="width: 100%;height: 100%">
                   <el-icon>
@@ -99,6 +102,7 @@
       </div>
     </div>
   </div>
+  <!-- 填写领养信息弹窗 -->
   <el-dialog v-model="wantAdoptFormVisible" title="领养信息">
     <el-form style="width: 90%;" ref="formRef" :model="wantAdoptForm" :rules="rules" label-width="150px"
              class="demo-ruleForm"
@@ -156,6 +160,14 @@ import {
 } from '@element-plus/icons-vue'
 import {reactive, ref} from "vue";
 import {getPetImageUrl, options, handleChange} from "@/utils";
+
+// 图片预览
+const srcList = ref([]);
+const preview = (photo) => {
+  // 清除原本的预览
+  srcList.value = [];
+  srcList.value.push(photo);
+}
 
 // 表单选择地址并赋值给表单
 const locHandleChange = (locArr) => {

@@ -24,6 +24,27 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="editForm.isFree" :active-value="1" :inactive-value="0"/>
       </el-form-item>
+      <el-form-item label="宠物照片" prop="dataList">
+        <div style="height: 160px; position: relative">
+          <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
+          <el-upload
+              :limit="1"
+              list-type="picture-card"
+              :auto-upload="false"
+              action="#"
+              show-file-list
+              :file-list="fileList"
+              :on-exceed="handleExceed"
+              :on-change="handlePetChange"
+              :on-preview="handlePictureCardPreview"
+          >
+            <span style="font-size: 30px;">+</span>
+          </el-upload>
+        </div>
+        <el-dialog v-model="dialogVisible" style="width:600px;">
+          <el-image v-bind:src="dialogImageUrl" style="width: 100%;"/>
+        </el-dialog>
+      </el-form-item>
       <div style="position: relative">
         <el-form-item label="我的详细地址" prop="location">
           <el-input v-model="editForm.location" placeholder="请输入详细地址，右侧可快速选择"/>
@@ -56,7 +77,6 @@
       </el-form-item>
       <el-form-item>
         <el-button @click="router.go(-1)">取消</el-button>
-        <el-button @click="resetForm()">重置</el-button>
         <el-button type="primary" @click="submitForm()">
           修改
         </el-button>
@@ -68,8 +88,8 @@
 <script setup>
 import {ref} from 'vue'
 import {ElMessage} from 'element-plus'
-import {put, get} from '@/api/request.js'
-import {options, handleChange} from "@/utils";
+import {put, get, takeAccId} from '@/api/request.js'
+import {options, handleChange, getPetImageUrl} from "@/utils";
 import {useRoute} from 'vue-router'
 import router from "@/router";
 
@@ -82,7 +102,7 @@ const editForm = ref({
   isFree: '', // 是否免费
   locationArr: '', // 地址选择片段
   location: '', // 地址输入片段
-  pictureId: '', // 图片id
+  picName: '', // 图片名
   contactsName: '', // 联系人
   contactsPhone: '',  // 电话
   contactsWechat: '', // 微信
@@ -91,26 +111,69 @@ const editForm = ref({
   text: '' // 详细描述
 })
 
-const formRef = ref()
+// 图片预览
+const dialogVisible = ref(false);
+const dialogImageUrl = ref('');
+const handlePictureCardPreview = (file) => {
+  dialogImageUrl.value = file.url;
+  dialogVisible.value = true;
+}
 
+// 超出limit时触发的方法
+const handleExceed = () => {
+  ElMessage.warning('只能上传一个文件')
+}
+
+// 暂存上传的文件
+const dataList = ref('')
+// 选中文件触发的change事件
+const handlePetChange = (file, fileList) => {
+  // 限制文件后缀名
+  const isJPG = file.raw.type === 'image/jpeg'
+  const isPNG = file.raw.type === 'image/png'
+  // 限制上传文件的大小
+  const isLt3M = file.raw.size / 1024 / 1024 < 3
+  if (!isPNG && !isJPG) {
+    ElMessage.error('图片只能是 JPG/PNG 格式')
+    return false
+  } else if (!isLt3M) {
+    ElMessage.error('图片应在3MB以内')
+    return false
+  } else {
+    let arr = [];
+    fileList.forEach((item) => {
+      arr.push(item.raw);
+    });
+    dataList.value = arr;
+  }
+}
+
+const formRef = ref()
 // 提交表单
-const submitForm = async () => {
-  await formRef.value.validate((valid) => {
+const submitForm = () => {
+  formRef.value.validate((valid) => {
     if (valid) {
-      put('/api/postBul/updatePetByPetId', {
-        petId: route.query.petId,
-        petName: editForm.value.petName,
-        petType: editForm.value.petType,
-        petSex: editForm.value.petSex,
-        isFree: editForm.value.isFree,
-        location: editForm.value.location,
-        contactsName: editForm.value.contactsName,
-        contactsPhone: editForm.value.contactsPhone,
-        contactsWechat: editForm.value.contactsWechat,
-        contactsEmail: editForm.value.contactsEmail,
-        title: editForm.value.title,
-        text: editForm.value.text
-      }, () => {
+      // formData格式
+      const formData = new FormData();
+      if (dataList.value.length !== 0 && dataList.value) {
+        formData.append("file", dataList.value[0])
+      }
+      formData.append("petId", route.query.petId)
+      formData.append("picType", "pet")
+      formData.append("accountId", takeAccId())
+      formData.append("type", 'away')
+      formData.append("petName", editForm.value.petName)
+      formData.append("petType", editForm.value.petType)
+      formData.append("petSex", editForm.value.petSex)
+      formData.append("isFree", editForm.value.isFree)
+      formData.append("location", editForm.value.location)
+      formData.append("contactsName", editForm.value.contactsName)
+      formData.append("contactsPhone", editForm.value.contactsPhone)
+      formData.append("contactsWechat", editForm.value.contactsWechat)
+      formData.append("contactsEmail", editForm.value.contactsEmail)
+      formData.append("title", editForm.value.title)
+      formData.append("text", editForm.value.text)
+      put('/api/postBul/updatePetByPetId', formData, () => {
         ElMessage.success('修改成功')
         router.go(-1)
       })
@@ -120,13 +183,15 @@ const submitForm = async () => {
   })
 }
 
-// 重置表单数据
-const resetForm = () => {
-  formRef.value.resetFields();
-}
+const fileList = ref([])
 
 // 获取数据
 get('/api/pet/getPBByPetId?petId=' + route.query.petId, (data) => {
+  data.picName = getPetImageUrl(data.picName)
+  fileList.value.push({
+    name: data.picName,
+    url: data.picName
+  })
   editForm.value = data
   console.log(data)
 })

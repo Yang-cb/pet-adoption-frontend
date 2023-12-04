@@ -35,10 +35,14 @@
               show-file-list
               :on-exceed="handleExceed"
               :on-change="handlePetChange"
+              :on-preview="handlePictureCardPreview"
           >
             <span style="font-size: 30px;">+</span>
           </el-upload>
         </div>
+        <el-dialog v-model="dialogVisible" style="width:600px;">
+          <el-image v-bind:src="dialogImageUrl" style="width: 100%;"/>
+        </el-dialog>
       </el-form-item>
       <div style="position: relative">
         <el-form-item label="我的详细地址" prop="location">
@@ -94,6 +98,14 @@ const locHandleChange = (locArr) => {
 // 超出limit时触发的方法
 const handleExceed = () => {
   ElMessage.warning('只能上传一个文件')
+}
+
+// 图片预览
+const dialogVisible = ref(false);
+const dialogImageUrl = ref('');
+const handlePictureCardPreview = (file) => {
+  dialogImageUrl.value = file.url;
+  dialogVisible.value = true;
 }
 
 // 暂存上传的文件
@@ -245,4 +257,15 @@ const resetForm = () => {
   color: #000;
 }
 
+.el-dialog {
+  background-color: rgb(0, 0, 0, 0) !important;
+}
+
+.el-dialog .el-dialog__header {
+  display: none;
+}
+
+.el-dialog .el-dialog__body {
+  padding: 0;
+}
 </style>
