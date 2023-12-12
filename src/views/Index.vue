@@ -1,9 +1,13 @@
 <template>
-  <div style="height: 100vh; ">
+  <div style="height: 100vh; position: relative">
+    <div style="position: absolute; ">
+
+    </div>
+
     <!-- 外层容器。当子元素中包含<el-header>时，全部子元素会垂直上下排列，否则会水平左右排列。 -->
     <el-container class="layout-container-demo" style="height: 100vh">
       <!-- 顶栏容器 -->
-      <el-header style="position: relative">
+      <el-header style="height: 60px; position: relative">
         <!-- 面包屑 -->
         <span style="position: absolute; left: 210px; bottom: 5px">
           <el-breadcrumb separator="/">
@@ -18,7 +22,7 @@
         <el-radio-group v-model="isCollapse" style="height: 100%;">
           <el-radio-button :label="!isCollapse">
             <el-icon>
-              <Menu/>
+              <Fold/>
             </el-icon>
           </el-radio-button>
         </el-radio-group>
@@ -37,7 +41,7 @@
                 <div style="margin-left: 20px; margin-bottom: 20px">
                   <!-- 头像 -->
                   <div>
-                    <el-button type='' link @click="toPersonalData()">
+                    <el-button link @click="router.push('/index/personalData')">
                       <el-avatar :size="80" :src="getAccImageUrl(personalData.picName)"/>
                     </el-button>
                   </div>
@@ -47,11 +51,12 @@
                 </div>
                 <el-dropdown-menu>
                   <el-dropdown-item>
-                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="toPersonalData">个人资料
+                    <el-button style="height: 30px; font-size: 14px" link
+                               @click="router.push('/index/personalData')">个人资料
                     </el-button>
                   </el-dropdown-item>
                   <el-dropdown-item>
-                    <el-button style="height: 30px; font-size: 14px" type='text' link @click="userLogout">退出登录
+                    <el-button style="height: 30px; font-size: 14px" link @click="userLogout">退出登录
                     </el-button>
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -73,54 +78,55 @@
               :collapse-transition="false"
               router
           >
-            <el-sub-menu index="1">
+            <!-- 管理员 -->
+            <el-menu-item v-if="takeAccAuth()==='ADMIN'" index="/index/control">
+              <template #title>
+                <el-icon>
+                  <Menu/>
+                </el-icon>
+                <span>控制台</span>
+              </template>
+            </el-menu-item>
+            <el-sub-menu index="2">
               <template #title>
                 <el-icon>
                   <HomeFilled/>
                 </el-icon>
                 <span>领养宠物</span>
               </template>
+              <el-menu-item index="/index">首页</el-menu-item>
               <el-menu-item-group>
-                <template #title><span>Group One</span></template>
+                <template #title><span>PET</span></template>
                 <el-menu-item index="/index/allPB">全部宠物</el-menu-item>
-                <el-menu-item index="1-2">item two</el-menu-item>
-              </el-menu-item-group>
-              <el-menu-item-group title="Group Two">
-                <el-menu-item index="1-3">item three</el-menu-item>
               </el-menu-item-group>
             </el-sub-menu>
-            <el-sub-menu index="2">
+            <el-sub-menu index="3">
               <template #title>
                 <el-icon>
                   <Promotion/>
                 </el-icon>
                 <span>发布领养信息</span>
               </template>
-              <el-menu-item index="/index/publishAway">求抱走</el-menu-item>
-              <el-menu-item index="/index/publishAdopt">想领养</el-menu-item>
+              <el-menu-item index="/index/publish/publishAway">求抱走</el-menu-item>
+              <el-menu-item index="/index/publish/publishAdopt">想领养</el-menu-item>
             </el-sub-menu>
-            <el-sub-menu index="3">
+            <el-menu-item index="/index/personalData">
               <template #title>
                 <el-icon>
                   <UserFilled/>
                 </el-icon>
                 <span>个人中心</span>
               </template>
-              <el-menu-item index="/index/personalData">个人资料</el-menu-item>
-              <el-menu-item-group title="Group Two">
-              </el-menu-item-group>
-            </el-sub-menu>
-            <el-sub-menu index="4">
+            </el-menu-item>
+            <el-sub-menu index="5">
               <template #title>
                 <el-icon>
                   <Comment/>
                 </el-icon>
                 <span>消息处理</span>
               </template>
-              <el-menu-item index="/index/adoptRequest">发送的领养请求</el-menu-item>
-              <el-menu-item index="/index/handleAdoptRequest">收到的领养请求</el-menu-item>
-              <el-menu-item-group title="Group Two">
-              </el-menu-item-group>
+              <el-menu-item index="/index/request/adoptRequest">发送的领养请求</el-menu-item>
+              <el-menu-item index="/index/request/handleAdoptRequest">收到的领养请求</el-menu-item>
             </el-sub-menu>
           </el-menu>
         </el-aside>
@@ -138,15 +144,17 @@
 
 <script setup>
 import {logout} from '@/api/request.js'
-import router from "@/router/index.js";
+import {useRouter} from "vue-router";
 import {ref} from 'vue'
-import {Menu, ArrowDownBold, HomeFilled, UserFilled, Comment, Promotion} from '@element-plus/icons-vue'
+import {Menu, ArrowDownBold, HomeFilled, UserFilled, Comment, Promotion, Fold} from '@element-plus/icons-vue'
 import {ElMessage} from "element-plus";
-import {get, takeAccId} from "@/api/request.js";
+import {get, takeAccId, takeAccAuth} from "@/api/request.js";
 import {getAccImageUrl} from "@/utils";
 
+const router = useRouter()
+
 // 菜单激活项
-const activeIndex = sessionStorage.getItem('keyPath') || '/index/allPB'
+const activeIndex = sessionStorage.getItem('keyPath') || '/index'
 // 将激活项存入sessionStorage
 const handleSelect = (keyPath) => {
   sessionStorage.setItem('keyPath', keyPath);
@@ -164,13 +172,8 @@ get('/api/account?id=' + takeAccId(), (data) => {
 const isCollapse = ref(false)
 
 // 退出登录
-function userLogout() {
+const userLogout = () => {
   logout(() => router.push("/"))
-}
-
-// 收起菜单前往个人资料
-const toPersonalData = () => {
-  router.push('personalData');
 }
 
 </script>

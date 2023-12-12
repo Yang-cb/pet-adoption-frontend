@@ -21,12 +21,13 @@ const defaultFailure = (message, status, url) => {
 const authItemName = "authorize"
 
 // 储存用户登录数据
-function storeAccessToken(remember, token, expire, username, id) {
+function storeAccessToken(remember, data) {
     const authObj = {
-        token: token,
-        expire: expire,
-        username: username,
-        id: id
+        token: data.token,
+        authority: data.authority,
+        expire: data.expire,
+        username: data.username,
+        id: data.id
     }
     const str = JSON.stringify(authObj)
     // 是否勾选记住我
@@ -69,6 +70,19 @@ function takeAccId() {
         return null
     }
     return authObj.id
+}
+
+// 获取用户登录数据的id
+function takeAccAuth() {
+    const str = localStorage.getItem(authItemName) || sessionStorage.getItem(authItemName);
+    if (!str) return null
+    const authObj = JSON.parse(str)
+    if (new Date(authObj.expire) <= new Date()) {
+        deleteAccessToken()
+        ElMessage.warning("登录状态已过期，请重新登录")
+        return null
+    }
+    return authObj.authority
 }
 
 function initPost(url, data, headers, success, failure, error = defaultError) {
@@ -126,7 +140,7 @@ function login(username, password, remember, success, failure = defaultFailure) 
         // axios只支持json数据，而security只能表单登录
         'Content-Type': 'application/x-www-form-urlencoded'
     }, (data) => {
-        storeAccessToken(remember, data.token, data.expireTime, data.username, data.id)
+        storeAccessToken(remember, data)
         ElMessage.success('登录成功')
         success(data)
     }, failure)
@@ -146,4 +160,4 @@ function unauthorized() {
     return !takeAccessToken()
 }
 
-export {post, get, put, login, logout, unauthorized, takeAccessToken, takeAccId}
+export {post, get, put, login, logout, unauthorized, takeAccessToken, takeAccId, takeAccAuth}

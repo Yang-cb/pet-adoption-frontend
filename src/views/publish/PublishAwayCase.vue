@@ -24,8 +24,31 @@
         <!-- 状态为on时为1，状态为off时为0 -->
         <el-switch v-model="form.isFree" active-value="1" inactive-value="0"/>
       </el-form-item>
+      <el-form-item label="已绝育" prop="isSterilization" required>
+        <el-switch v-model="form.isSterilization" active-value="1" inactive-value="0"/>
+      </el-form-item>
+
+      <el-row>
+        <el-col :span="7">
+          <el-form-item label="健康状态" prop="petHealthStatusRadio">
+            <el-radio-group v-model="form.petHealthStatusRadio">
+              <el-radio label="健康">健康</el-radio>
+              <el-radio label="不健康">不健康</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <el-col :span="17">
+          <!-- 仅当选择不健康时，输入框才会出现 -->
+          <el-form-item label-width="0" v-if="form.petHealthStatusRadio === '不健康'"
+                        prop="petHealthStatusInput"
+                        required>
+            <el-input placeholder="请描述病情" v-model="form.petHealthStatusInput"/>
+          </el-form-item>
+        </el-col>
+      </el-row>
+
       <el-form-item label="宠物照片" prop="dataList">
-        <div style="height: 160px; position: relative">
+        <div class="set-pet-pic">
           <!-- auto-upload是否自动上传，:action自动上传的请求路径， -->
           <el-upload
               :limit="1"
@@ -37,10 +60,12 @@
               :on-change="handlePetChange"
               :on-preview="handlePictureCardPreview"
           >
-            <span style="font-size: 30px;">+</span>
+            <el-icon size="30">
+              <Plus/>
+            </el-icon>
           </el-upload>
         </div>
-        <el-dialog v-model="dialogVisible" style="width:600px;">
+        <el-dialog class="trans-dialog" v-model="dialogVisible" style="width:600px;">
           <el-image v-bind:src="dialogImageUrl" style="width: 100%;"/>
         </el-dialog>
       </el-form-item>
@@ -89,6 +114,7 @@ import {reactive, ref} from 'vue'
 import {ElMessage} from 'element-plus'
 import {post, takeAccId} from '@/api/request.js'
 import {options, handleChange} from "@/utils";
+import {Plus} from "@element-plus/icons-vue";
 
 // 表单选择地址并赋值给表单
 const locHandleChange = (locArr) => {
@@ -137,6 +163,9 @@ const form = reactive({
   petType: 'cat', // 宠物种类
   petSex: '1', // 宠物性别
   isFree: '1', // 是否免费
+  isSterilization: '1', // 是否绝育
+  petHealthStatusRadio: '健康', // 是否健康单选框
+  petHealthStatusInput: '', // 选择不健康输入框
   locationArr: '', // 地址选择片段
   location: '', // 地址输入片段
   picName: '', // 图片名
@@ -157,6 +186,48 @@ const validatePic = (rule, value, callback) => {
   }
 }
 
+const formRef = ref()
+// 提交表单
+const submitForm = () => {
+  formRef.value.validate((valid) => {
+    if (valid) {
+      // formData格式
+      const awayFormData = new FormData();
+      if (dataList.value.length === 0 || !dataList.value) {
+        ElMessage.error('请上传图片');
+        return false;
+      }
+      awayFormData.append("file", dataList.value[0])
+      awayFormData.append("picType", "pet")
+      awayFormData.append("accountId", takeAccId())
+      awayFormData.append("type", 'away')
+      awayFormData.append("petName", form.petName)
+      awayFormData.append("petType", form.petType)
+      awayFormData.append("petSex", form.petSex)
+      awayFormData.append("isFree", form.isFree)
+      awayFormData.append("isSterilization", form.isSterilization)
+      awayFormData.append("petHealthStatus",
+          form.petHealthStatusRadio === '健康' ? '健康' : form.petHealthStatusInput)
+      awayFormData.append("location", form.location)
+      awayFormData.append("contactsName", form.contactsName)
+      awayFormData.append("contactsPhone", form.contactsPhone)
+      awayFormData.append("contactsWechat", form.contactsWechat)
+      awayFormData.append("contactsEmail", form.contactsEmail)
+      awayFormData.append("title", form.title)
+      awayFormData.append("text", form.text)
+      post('/api/postBul/publishBulletin', awayFormData, () => {
+        ElMessage.success('发布成功')
+      }, () => {
+        ElMessage.error('发布失败')
+      })
+    }
+  })
+}
+// 重置表单数据
+const resetForm = () => {
+  formRef.value.resetFields();
+}
+
 const rules = {
   dataList: [
     {required: true, validator: validatePic, trigger: 'change'}
@@ -172,6 +243,17 @@ const rules = {
   isFree: [
     {required: true, message: '请选择是否免费', trigger: 'change'},
     {pattern: /^[0-1]$/, message: '是否免费格式有误', trigger: 'blur'}
+  ],
+  isSterilization: [
+    {required: true, message: '请选择是否绝育', trigger: 'change'},
+    {pattern: /^[0-1]$/, message: '是否绝育格式有误', trigger: 'blur'}
+  ],
+  petHealthStatusRadio: [
+    {required: true, message: '请选择是否健康', trigger: 'change'}
+  ],
+  petHealthStatusInput: [
+    {required: true, message: '请描述病情', trigger: 'change'},
+    {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
   location: [
     {required: true, message: '请输入详细地址', trigger: 'change'},
@@ -198,46 +280,6 @@ const rules = {
     {required: true, message: '请详细描述宠物信息', trigger: 'blur',},
   ],
 }
-
-const formRef = ref()
-
-// 提交表单
-const submitForm = () => {
-  formRef.value.validate((valid) => {
-    if (valid) {
-      // formData格式
-      const formData = new FormData();
-      if (dataList.value.length === 0 || !dataList.value) {
-        ElMessage.error('请上传图片');
-        return false;
-      }
-      formData.append("file", dataList.value[0])
-      formData.append("picType", "pet")
-      formData.append("accountId", takeAccId())
-      formData.append("type", 'away')
-      formData.append("petName", form.petName)
-      formData.append("petType", form.petType)
-      formData.append("petSex", form.petSex)
-      formData.append("isFree", form.isFree)
-      formData.append("location", form.location)
-      formData.append("contactsName", form.contactsName)
-      formData.append("contactsPhone", form.contactsPhone)
-      formData.append("contactsWechat", form.contactsWechat)
-      formData.append("contactsEmail", form.contactsEmail)
-      formData.append("title", form.title)
-      formData.append("text", form.text)
-      post('/api/postBul/publishBulletin', formData, () => {
-        ElMessage.success('发布成功')
-      }, () => {
-        ElMessage.error('发布失败')
-      })
-    }
-  })
-}
-// 重置表单数据
-const resetForm = () => {
-  formRef.value.resetFields();
-}
 </script>
 
 <style>
@@ -257,15 +299,15 @@ const resetForm = () => {
   color: #000;
 }
 
-.el-dialog {
+.trans-dialog {
   background-color: rgb(0, 0, 0, 0) !important;
 }
 
-.el-dialog .el-dialog__header {
+.trans-dialog .el-dialog__header {
   display: none;
 }
 
-.el-dialog .el-dialog__body {
+.trans-dialog .el-dialog__body {
   padding: 0;
 }
 </style>

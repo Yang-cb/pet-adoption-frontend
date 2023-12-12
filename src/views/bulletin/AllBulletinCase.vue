@@ -1,9 +1,8 @@
 <template>
-  <div style="margin-top: 20px; margin-bottom: 100px">
+  <!-- 子路由入口 -->
+  <router-view/>
+  <div v-show="$route.meta.showFooter" style="margin-top: 20px; margin-bottom: 100px">
     <div>
-      <div>
-
-      </div>
       <ul style="list-style: none; padding: 0; margin: 20px 30px; width: 70%;">
         <li v-for="(pb, index) in pBList" :key="pb.petId"
             v-show="currentPage * pageSize >= index + 1 && (currentPage - 1) * pageSize < index + 1"
@@ -122,7 +121,7 @@ const handleCurrentChange = (page) => {
 const router = useRouter();
 const petData = (petId) => {
   router.push({
-    path: '/index/onePBData',
+    path: '/index/allPB/onePBData',
     query: {
       petId: petId
     }

@@ -63,7 +63,7 @@ import {getPetImageUrl} from "@/utils";
 const router = useRouter();
 const petData = (petId) => {
   router.push({
-    path: '/index/onePBData',
+    path: '/index/allPB/onePBData',
     query: {
       petId: petId
     }

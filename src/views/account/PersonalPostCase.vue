@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <router-view/>
+  <div v-show="$route.meta.showFooter">
     <el-space :fill="true" wrap style="width: 100%; align-content: center;">
       <el-card v-for="postData in personalPostData" :key="postData.petId"
                shadow="hover" style="height: 300px; margin: 0 100px">
@@ -14,8 +15,19 @@
             </div>
             <div style="margin-top: 20px">
               <el-button-group>
-                <el-button type="primary" @click="openEditOnePost(postData.petId)" :icon="Edit"/>
-                <el-button type="primary" @click="openDeleteOnePost(postData.petId)" :icon="Delete"/>
+                <el-button :type="getTagType(postData.bulletinStatus)">
+                  {{ getBulletinStatus(postData.bulletinStatus) }}
+                </el-button>
+                <el-button type="primary" @click="openEditOnePost(postData.bulletinStatus,postData.petId)">
+                  <el-icon>
+                    <Edit/>
+                  </el-icon>
+                </el-button>
+                <el-button type="primary" @click="openDeleteOnePost(postData.petId)">
+                  <el-icon>
+                    <Delete/>
+                  </el-icon>
+                </el-button>
               </el-button-group>
             </div>
           </div>
@@ -54,8 +66,9 @@
         </div>
       </el-card>
     </el-space>
+    <!-- 如果没有帖子显示内容 -->
     <div v-if="personalPostData.length===0">
-      <router-link to="/index/publishAway" style="text-decoration: none">
+      <router-link to="/index/publish/publishAway" style="text-decoration: none">
         <div
             style="display: flex; align-items: center; justify-content: center; height: 288px; width: 288px; background: rgba(0, 0, 0, 0.02);">
           <div style="font-weight: bold; color: rgb(133, 133, 133);">
@@ -73,28 +86,32 @@
 
 
 <script setup>
-import {ref} from 'vue'
+import {ref, watch} from 'vue'
 import {get, post, takeAccId} from '@/api/request.js'
 import {ElMessage, ElMessageBox} from "element-plus";
 import {Delete, Edit, Plus} from "@element-plus/icons-vue";
-import {useRouter} from 'vue-router'
+import {useRouter, useRoute} from 'vue-router'
 import {getPetImageUrl} from '@/utils'
 
-const getType = (petType) => {
-  if (petType === 'other' || petType === '' || petType === null) {
-    return '其他'
+const router = useRouter()
+const route = useRoute()
+
+// 修改后刷新
+watch(() => router.currentRoute.value, () => {
+  if (route.path === '/index/personalData/post') {
+    getPots()
   }
-  return petType === 'dog' ? '狗狗' : '猫猫'
-}
+})
 
 const personalPostData = ref([])
-
-const router = useRouter()
-
 // 打开编辑一条宠物数据页面
-const openEditOnePost = (petId) => {
+const openEditOnePost = (bulletinStatus, petId) => {
+  if (bulletinStatus === 0) {
+    ElMessage.warning('该宠物布告还未审核，无法修改')
+    return
+  }
   router.push({
-    path: '/index/personalEditPost',
+    path: '/index/personalData/post/personalEditPost',
     query: {
       petId: petId
     }
@@ -161,6 +178,38 @@ const getName = (name) => {
   if (name === null || name === '')
     return '未填写'
   return name
+}
+
+// 宠物类型
+const getType = (petType) => {
+  if (petType === 'other' || petType === '' || petType === null) {
+    return '其他'
+  }
+  return petType === 'dog' ? '狗狗' : '猫猫'
+}
+
+// 获取状态
+const getBulletinStatus = (bulletinStatus) => {
+  switch (bulletinStatus) {
+    case 0:
+      return '待审核'
+    case 1:
+      return '已通过'
+    case 2:
+      return '未通过'
+  }
+}
+
+// 获取状态颜色
+const getTagType = (bulletinStatus) => {
+  switch (bulletinStatus) {
+    case 0:
+      return 'info'
+    case 1:
+      return 'success'
+    case 2:
+      return 'danger'
+  }
 }
 </script>
 

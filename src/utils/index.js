@@ -18,7 +18,6 @@ const handleChange = (selectedOptions) => {
     for (let i = 0; i < selectedOptions.length; i++) {
         location += codeToText[selectedOptions[i]];
     }
-    console.log(location)//打印区域码所对应的属性值即中文地址
     return location;
 }
 
@@ -33,4 +32,29 @@ function getAccImageUrl(name) {
     return new URL(`../assets/images/acc/${name}`, import.meta.url).href;
 }
 
-export {base64ToUrl, strToDate, options, handleChange, getPetImageUrl, getAccImageUrl}
+// 保存表单数据到sessionStorage
+const saveFormDataForSession = (form) => {
+    sessionStorage.setItem('recodeForm', JSON.stringify(form))
+}
+
+// 从sessionStorage中获取表单Json数据
+const getFormDataForSession = () => {
+    return sessionStorage.getItem('recodeForm')
+}
+
+// 从sessionStorage中删除表单数据
+const removeFormDataForSession = () => {
+    sessionStorage.removeItem('recodeForm')
+}
+
+export {
+    base64ToUrl,
+    strToDate,
+    options,
+    handleChange,
+    getPetImageUrl,
+    getAccImageUrl,
+    saveFormDataForSession,
+    removeFormDataForSession,
+    getFormDataForSession
+}

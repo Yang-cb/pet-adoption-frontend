@@ -15,6 +15,13 @@ import OneBulletinData from "@/views/bulletin/OneBulletinDataCase.vue";
 import PersonalEditPost from "@/views/account/PersonalEditPostCase.vue";
 import AdoptRequest from "@/views/ask/AdoptRequestCase.vue";
 import HandleAdoptRequest from "@/views/ask/HandleAdoptRequestCase.vue";
+import ControlIndex from "@/views/admin/ControlIndex.vue";
+import ControlAccount from "@/views/admin/ControlAccountCase.vue";
+import ControlPet from "@/views/admin/ControlPetCase.vue";
+import ControlWantAdopt from "@/views/admin/ControlWantAdoptCase.vue";
+import Welcome from "@/views/Welcome.vue";
+import RequestIndex from "@/views/ask/RequestIndex.vue";
+import PublishIndex from "@/views/publish/PublishIndex.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,37 +59,53 @@ const router = createRouter({
             meta: {
                 title: '首页'
             },
-            // 默认访问路径
-            redirect: '/index/allPB',
             children: [{
+                path: '',
+                name: 'mainWelcome',
+                component: Welcome,
+                meta: {
+                    title: '欢迎'
+                }
+            }, {
                 path: 'allPB',
                 name: 'mainAllPB',
                 component: AllPB,
                 meta: {
-                    title: '全部宠物信息'
+                    title: '全部宠物信息',
+                    showFooter: true
                 },
-                children: []
+                children: [{
+                    path: 'onePBData',
+                    name: 'mainOnePBData',
+                    component: OneBulletinData,
+                    meta: {
+                        title: '宠物详细信息',
+                        showFooter: false
+                    },
+                },]
             }, {
-                path: 'onePBData',
-                name: 'mainOnePBData',
-                component: OneBulletinData,
+                path: 'publish',
+                name: 'mainPublish',
+                component: PublishIndex,
                 meta: {
-                    title: '宠物详细信息'
+                    title: '发布领养信息',
                 },
-            }, {
-                path: 'publishAway',
-                name: 'mainPublishAway',
-                component: PublishAway,
-                meta: {
-                    title: '发布领养信息'
-                },
-            }, {
-                path: 'publishAdopt',
-                name: 'mainPublishAdopt',
-                component: PublishAdopt,
-                meta: {
-                    title: '发布领养信息'
-                },
+                redirect: '/index/publish/publishAway',
+                children: [{
+                    path: 'publishAway',
+                    name: 'mainPublishAway',
+                    component: PublishAway,
+                    meta: {
+                        title: '求抱走',
+                    },
+                }, {
+                    path: 'publishAdopt',
+                    name: 'mainPublishAdopt',
+                    component: PublishAdopt,
+                    meta: {
+                        title: '想领养'
+                    },
+                },]
             }, {
                 path: 'personalData',
                 name: 'mainPersonalData',
@@ -96,7 +119,18 @@ const router = createRouter({
                         path: 'post',
                         name: 'mainPersonalPost',
                         component: PersonalPost,
-                        children: []
+                        meta: {
+                            showFooter: true
+                        },
+                        children: [{
+                            path: 'personalEditPost',
+                            name: 'mainPersonalEditPost',
+                            component: PersonalEditPost,
+                            meta: {
+                                title: '修改宠物信息',
+                                showFooter: false
+                            },
+                        },]
                     }, {
                         path: 'collect',
                         name: 'mainPersonalCollect',
@@ -104,26 +138,63 @@ const router = createRouter({
                     }
                 ]
             }, {
-                path: 'personalEditPost',
-                name: 'mainPersonalEditPost',
-                component: PersonalEditPost,
+                path: 'request',
+                name: 'mainRequest',
+                component: RequestIndex,
                 meta: {
-                    title: '修改宠物信息'
+                    title: '消息处理'
                 },
+                redirect: '/index/request/adoptRequest',
+                children: [{
+                    path: 'adoptRequest',
+                    name: 'mainAdoptRequest',
+                    component: AdoptRequest,
+                    meta: {
+                        title: '发送的请求'
+                    },
+                }, {
+                    path: 'handleAdoptRequest',
+                    name: 'mainHandleAdoptRequest',
+                    component: HandleAdoptRequest,
+                    meta: {
+                        title: '收到的请求'
+                    },
+                }]
             }, {
-                path: 'adoptRequest',
-                name: 'mainAdoptRequest',
-                component: AdoptRequest,
+                path: 'control',
+                name: 'adminControlIndex',
+                component: ControlIndex,
                 meta: {
-                    title: '发送的请求'
+                    title: '控制台',
+                    showFooter: true
                 },
-            }, {
-                path: 'handleAdoptRequest',
-                name: 'mainHandleAdoptRequest',
-                component: HandleAdoptRequest,
-                meta: {
-                    title: '收到的请求'
-                },
+                children: [
+                    {
+                        path: 'controlAccount',
+                        name: 'adminControlAccount',
+                        component: ControlAccount,
+                        meta: {
+                            title: '用户管理',
+                            showFooter: false
+                        },
+                    }, {
+                        path: 'controlPet',
+                        name: 'adminControlPet',
+                        component: ControlPet,
+                        meta: {
+                            title: '宠物布告管理',
+                            showFooter: false
+                        }
+                    }, {
+                        path: 'controlWantAdopt',
+                        name: 'adminControlWantAdopt',
+                        component: ControlWantAdopt,
+                        meta: {
+                            title: '想领请求管理',
+                            showFooter: false
+                        }
+                    }
+                ]
             }
             ]
         }

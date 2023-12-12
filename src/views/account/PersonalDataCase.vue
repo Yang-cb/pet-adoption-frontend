@@ -7,7 +7,7 @@
     <div class="main">
       <!-- 头像 -->
       <div>
-        <el-avatar shape="circle" :size="120" :fit=fill
+        <el-avatar shape="circle" :size="120" fit='fill'
                    v-bind:src="personalData.picName"
                    alt="无法显示" style="transform:translateY(-20px) "/>
       </div>
@@ -40,8 +40,8 @@
         router
         mode="horizontal"
     >
-      <el-menu-item index="post">发帖</el-menu-item>
-      <el-menu-item index="collect">收藏</el-menu-item>
+      <el-menu-item index="/index/personalData/post">发帖</el-menu-item>
+      <el-menu-item index="/index/personalData/collect">收藏</el-menu-item>
     </el-menu>
     <div class="PRoC">
       <router-view></router-view>
@@ -167,33 +167,28 @@
   </el-dialog>
 
   <!-- 修改头像对话框 -->
-  <el-dialog v-model="setAccPic" title="修改头像" style="width: 500px;">
-    <el-form :model="form">
-      <el-form-item>
-        <el-upload
-            :limit="1"
-            list-type="picture-card"
-            :auto-upload="false"
-            :action="''"
-            show-file-list
-            :on-exceed="handleExceed"
-            :on-change="change"
-        >
-          <i class="el-icon-plus">+</i>
-        </el-upload>
-        <el-dialog :visible.sync="dialogVisible">
-          <img width="100%" :src="accPic" alt="">
-        </el-dialog>
-      </el-form-item>
-    </el-form>
-    <template #footer>
+  <el-dialog class="set-acc-pic" v-model="setAccPic" title="修改头像">
+    <el-upload
+        :limit="1"
+        list-type="picture-card"
+        :auto-upload="false"
+        :action="''"
+        show-file-list
+        :on-exceed="handleExceed"
+        :on-change="change"
+    >
+      <el-icon size="40">
+        <Plus/>
+      </el-icon>
+    </el-upload>
+    <div style="position: absolute; bottom: 10px; right: 15px">
       <span class="dialog-footer">
         <el-button @click="cancelSubmit">取消</el-button>
         <el-button type="primary" @click="submitAccPic">
           提交
         </el-button>
       </span>
-    </template>
+    </div>
   </el-dialog>
 </template>
 
@@ -202,18 +197,112 @@ import {ref} from 'vue'
 import {get, post} from '@/api/request.js'
 import {ElMessage, ElDrawer} from "element-plus";
 import {takeAccId} from '@/api/request.js'
-import {strToDate, options, handleChange, getAccImageUrl} from '@/utils'
-import {Edit, Location} from "@element-plus/icons-vue";
+import {
+  strToDate,
+  options,
+  handleChange,
+  getAccImageUrl,
+  saveFormDataForSession,
+  removeFormDataForSession, getFormDataForSession
+} from '@/utils'
+import {Edit, Location, Plus} from "@element-plus/icons-vue";
+
+// 修改界面点击空白显示的对话框
+const dialogVisible = ref(false)
+// 修改界面点击空白关闭之前的操作
+const handleClose = () => {
+  if (JSON.stringify(form.value) === getFormDataForSession()) {
+    removeFormDataForSession()
+    modifyDr.value = false
+  } else {
+    dialogVisible.value = true
+  }
+}
+
+// 保存并退出
+const saveAndExit = () => {
+  submitForm()
+  dialogVisible.value = false
+}
+
+// 不保存并退出
+const exitWithoutSave = () => {
+  dialogVisible.value = false
+  modifyDr.value = false
+}
+
+// 修改资料抽屉
+const modifyDr = ref(false)
+const loading = ref(false)
+// 详细资料抽屉
+const detailsDr = ref(false)
+// 在详细里点修改资料
+const dToM = () => {
+  detailsDr.value = false
+  modifyDr.value = true
+}
+
+const form = ref({
+  nikeName: '', // 昵称
+  signature: '', // 签名
+  locationArr: [], // 地址数组
+  location: '', //地区
+  sex: '', // 性别
+  birthday: '' // 出生日期
+})
+
+const modifyRef = ref()
 
 // 修改界面对话框
 const openEdit = (accountId) => {
   get('/api/account?id=' + accountId, (data) => {
     form.value = data
     console.log(form.value)
+    // 记录表单数据：将表单数据存入sessionStorage
+    saveFormDataForSession(form.value)
   }, (err) => {
     ElMessage.error(err)
   })
   modifyDr.value = true
+}
+
+// 抽屉大小
+const drWidth = '40%'
+// 关闭抽屉动画时间
+let timer
+
+const submitForm = () => {
+  if (JSON.stringify(form.value) === getFormDataForSession()) {
+    ElMessage.info('未作修改')
+    return
+  }
+  modifyRef.value.validate((valid) => {
+        if (valid) {
+          loading.value = true
+          timer = setTimeout(() => {
+            // 动画关闭需要一定的时间
+            setTimeout(() => {
+              loading.value = false
+            }, 400)
+          }, 2000)
+          post('/api/account/updateAccountById', {
+            id: takeAccId(),
+            nikeName: form.value.nikeName,
+            signature: form.value.signature === '' ? '什么都没有留下...' : form.value.signature,
+            location: form.value.location === '' ? '未知' : form.value.location,
+            sex: form.value.sex,
+            birthday: form.value.birthday
+          }, () => {
+            ElMessage.success('修改成功')
+            removeFormDataForSession()
+            modifyDr.value = false
+            getAccount()
+          }, (msg) => {
+            ElMessage.error(msg)
+          })
+        }
+      }
+  )
 }
 
 // 修改头像对话框是否显示
@@ -276,26 +365,11 @@ const change = (file, fileList) => {
   }
 }
 
-
-const dialogVisible = ref(false)
-// 修改界面点击空白显示对话框
-const handleClose = () => {
-  if (loading.value) {
-    return
-  }
-  dialogVisible.value = true
-}
-
-// 保存并退出
-const saveAndExit = () => {
-  submitForm()
-  dialogVisible.value = false
-}
-
-// 不保存并退出
-const exitWithoutSave = () => {
-  dialogVisible.value = false
+const cancelForm = () => {
+  removeFormDataForSession()
+  loading.value = false
   modifyDr.value = false
+  clearTimeout(timer)
 }
 
 // 表单选择地址
@@ -347,33 +421,6 @@ const getBirthday = (dateStr) => {
   return date.getMonth() + 1 + '月' + date.getDate() + '日'
 }
 
-// 抽屉大小
-const drWidth = '40%'
-// 关闭抽屉动画时间
-let timer
-
-// 修改资料抽屉
-const modifyDr = ref(false)
-const loading = ref(false)
-// 详细资料抽屉
-const detailsDr = ref(false)
-// 在详细里点修改资料
-const dToM = () => {
-  detailsDr.value = false
-  modifyDr.value = true
-}
-
-const form = ref({
-  nikeName: '', // 昵称
-  signature: '', // 签名
-  locationArr: [], // 地址数组
-  location: '', //地区
-  sex: '', // 性别
-  birthday: '' // 出生日期
-})
-
-const modifyRef = ref()
-
 const rules = {
   nikeName: [
     {required: true, message: '请输入昵称', trigger: 'change'},
@@ -399,42 +446,6 @@ const rules = {
     {pattern: /^[A-Za-z0-9\u4e00-\u9fa5]+$/, message: '不允许输入空格等特殊符号', trigger: 'blur'}
   ],
 }
-
-const submitForm = async () => {
-  await modifyRef.value.validate((valid) => {
-        if (valid) {
-          loading.value = true
-          timer = setTimeout(() => {
-            // 动画关闭需要一定的时间
-            setTimeout(() => {
-              loading.value = false
-            }, 400)
-          }, 2000)
-          post('/api/account/updateAccountById', {
-            id: takeAccId(),
-            nikeName: form.value.nikeName,
-            signature: form.value.signature === '' ? '什么都没有留下...' : form.value.signature,
-            location: form.value.location === '' ? '未知' : form.value.location,
-            sex: form.value.sex,
-            birthday: form.value.birthday
-          }, () => {
-            ElMessage.success('修改成功')
-            modifyDr.value = false
-            getAccount()
-          }, (msg) => {
-            ElMessage.error(msg)
-          })
-        }
-      }
-  )
-}
-
-const cancelForm = () => {
-  loading.value = false
-  modifyDr.value = false
-  clearTimeout(timer)
-}
-
 </script>
 
 <style>
@@ -461,5 +472,28 @@ const cancelForm = () => {
 
 .o_table tbody tr td:first-child {
   font-weight: bold;
+}
+
+.set-acc-pic {
+  height: 540px;
+  width: 540px;
+  overflow: hidden;
+  position: relative;
+}
+
+.set-acc-pic .el-dialog__body {
+  margin: 0 50px;
+}
+
+.set-acc-pic .el-upload--picture-card {
+  width: 400px;
+  height: 400px;
+}
+
+.set-acc-pic .el-upload-list--picture-card .el-upload-list__item {
+  width: 400px;
+  height: 400px;
+  line-height: 400px;
+  margin-bottom: 200px;
 }
 </style>

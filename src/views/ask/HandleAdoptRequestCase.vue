@@ -12,8 +12,9 @@
             <!-- 按钮组/操作结果 -->
             <div style="margin-top: 20px">
               <el-button-group v-if="want.wantStatus===1">
-                <el-button @click="controls(want.wantId, 3)" type="primary">同意</el-button>
-                <el-button @click="controls(want.wantId, 4)" type="danger">拒绝</el-button>
+                <el-button @click="accountEditWantStatus( want.accountId,want.wantId, 3)" type="primary">同意
+                </el-button>
+                <el-button @click="accountEditWantStatus(want.accountId,want.wantId, 4)" type="danger">拒绝</el-button>
               </el-button-group>
               <el-tag type="success" v-if="want.wantStatus===3">
                 您已同意
@@ -101,7 +102,7 @@ import {getPetImageUrl} from "@/utils";
 import {ArrowRight} from "@element-plus/icons-vue";
 
 // 更新领养状态
-const controls = (wantId, status) => {
+const accountEditWantStatus = (accountId, wantId, status) => {
   ElMessageBox.confirm(
       `同意/拒绝后不能撤销，你确定要"${status === 3 ? '同意' : '拒绝'}"吗?`,
       'Warning',
@@ -113,7 +114,8 @@ const controls = (wantId, status) => {
   ).then(() => {
     put('/api/wantAdopt/updateWantAdoptStatus', {
       // 发布宠物布告的账号id
-      accountId: takeAccId(),
+      accountId: accountId,
+      initStatus: 1,
       wantId: wantId,
       wantStatus: status
     }, () => {
